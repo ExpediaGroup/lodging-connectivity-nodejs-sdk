@@ -1,0 +1,137 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "import"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    // Possible Errors
+    "no-console": "warn",
+    // Warn about console statements
+    "no-debugger": "warn",
+    // Warn about debugger statements
+
+    // Best Practices
+    "curly": "error",
+    // Require curly braces for all control statements
+    "eqeqeq": [
+      "error",
+      "always"
+    ],
+    // Require === and !==
+    "no-eval": "error",
+    // Disallow eval()
+
+    // Variables
+    "no-unused-vars": "off",
+
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type"
+        ],
+        "alphabetize": { "order": "asc", "caseInsensitive": true }
+      }
+    ],
+    // Disabled as @typescript-eslint/no-unused-vars will handle this
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      // Warn about unused variables
+      {
+        "vars": "all",
+        "args": "after-used",
+        "ignoreRestSiblings": true
+      }
+    ],
+    // Stylistic Issues
+    "semi": [
+      "error",
+      "always"
+    ],
+    // Require semicolons
+    "quotes": [
+      "error",
+      "single"
+    ],
+    // Require single quotes
+    "indent": [
+      "error",
+      2
+    ],
+    // 2-space indentation
+
+    // TypeScript Specific Rules
+    "@typescript-eslint/explicit-function-return-type": "off",
+    // Turn off explicit return types for functions
+    "@typescript-eslint/no-explicit-any": "warn",
+    // Warn about the use of any type
+    "@typescript-eslint/no-non-null-assertion": "error",
+    // Warn about non-null assertions
+    "@typescript-eslint/no-inferrable-types": [
+      "warn",
+      // Warn about inferrable types
+      {
+        "ignoreParameters": true
+      }
+    ],
+    // Code Complexity
+    "complexity": [
+      "warn",
+      {
+        "max": 10
+      }
+    ],
+    // Warn if function has a complexity over 10
+    "max-depth": [
+      "warn",
+      4
+    ],
+    // Warn if blocks nested too deeply
+    "max-lines": [
+      "warn",
+      {
+        "max": 300,
+        "skipComments": true
+      }
+    ],
+    // Warn if a file is longer than 300 lines
+    "max-params": [
+      "warn",
+      5
+    ],
+    // Warn if function has more than 5 parameters
+    "max-statements": [
+      "warn",
+      10
+    ]
+    // Warn if function has more than 10 statements
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.test.ts",
+        "*.spec.ts"
+      ],
+      "env": {
+        "jest": true
+        // Add Jest global variables for test files
+      }
+    }
+  ]
+}

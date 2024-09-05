@@ -1,0 +1,37 @@
+{
+  "name": "@expediagroup/lodging-connectivity-sdk",
+  "version": "0.0.2-SNAPSHOT",
+  "files": ["dist"],
+  "scripts": {
+    "build": "rollup -c ../rollup.config.js --bundleConfigAsCjs",
+    "publish": "pnpm run clean && pnpm run build && cd dist && pnpm publish --access public",
+    "clean": "rimraf dist",
+    "dev": "ts-node src/index.ts",
+    "test": "jest",
+    "lint": "eslint 'src/**/*.ts'",
+    "format": "prettier --write 'src/**/*.ts'",
+    "codegen": "graphql-codegen"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/typed-document-node": "^5.0.9",
+    "@graphql-codegen/typescript": "^4.0.9",
+    "@graphql-codegen/typescript-operations": "^4.2.3",
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "axios-mock-adapter": "^1.22.0"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.10.8",
+    "@types/lodash": "^4.17.7",
+    "axios": "^1.7.2",
+    "graphql": "^16.9.0",
+    "lodash": "^4.17.21",
+    "node-fetch": "^2.7.0",
+    "typescript-json-serializer": "^6.0.1",
+    "winston": "^3.13.1"
+  }
+}
