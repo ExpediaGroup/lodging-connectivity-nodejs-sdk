@@ -19,6 +19,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        ref: ${{ github.head_ref }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
