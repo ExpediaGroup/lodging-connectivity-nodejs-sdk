@@ -23,6 +23,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install pnpm
+        run: npm install -g pnpm
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -44,7 +47,7 @@ jobs:
             else
               version="$curr_version"
             fi
-  
+          
             echo "version: ||$version||"
             echo "Publishing a beta release: $version"
             npm version "$version" --allow-same-version
