@@ -26,7 +26,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          curr_version="$(npm pkg get version | sed "s/\"//g")"          
+          curr_version="$(npm pkg get version | sed "s/\"//g")"
+                    
           if [ "${{ inputs.channel }}" == "productiobn" ]; then
             echo "Publishing a production release: $curr_version"
             npm i
