@@ -50,6 +50,6 @@ jobs:
             pnpm publish --no-git-checks
           elif [ "${{ inputs.channel }}" == "beta" ]; then
             echo "Publishing a beta release: $version"
-            pnpm version "$version" --allow-same-version
+            pnpm --filter '@expediagroup/lodging-connectivity-sdk' version "$version" --allow-same-version
             pnpm publish --tag beta --no-git-checks
           fi
