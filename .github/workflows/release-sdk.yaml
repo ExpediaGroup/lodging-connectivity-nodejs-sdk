@@ -41,13 +41,13 @@ jobs:
           if [ "${{ inputs.channel }}" == "production" ]; then
             echo "Publishing a production release: $curr_version"
             pnpm i
-            npx tsc
+            pnpm tsc
             pnpm publish
           elif [ "${{ inputs.channel }}" == "beta" ]; then
             echo "Publishing a beta release: $version"
             pnpm version "$version" --allow-same-version
 
             pnpm i
-            npx tsc
+            pnpm tsc
             pnpm publish --tag beta
           fi
