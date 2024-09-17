@@ -5,6 +5,7 @@ on:
     inputs:
       channel:
         type: choice
+        description: 'Choose the release channel/tag'
         options:
           - beta
           - production
