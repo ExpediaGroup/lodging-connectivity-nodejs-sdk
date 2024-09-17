@@ -1,10 +1,11 @@
-name: Releasen SDK to NPM
+name: Release SDK to NPM
 
 on:
   workflow_dispatch:
     inputs:
       channel:
         type: choice
+        description: 'Choose the release channel/tag'
         options:
           - beta
           - production
@@ -19,7 +20,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
-      
+
       - name: Release
         working-directory: code
         env:
@@ -27,8 +28,8 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           curr_version="$(npm pkg get version | sed "s/\"//g")"
-                    
-          if [ "${{ inputs.channel }}" == "productiobn" ]; then
+          
+          if [ "${{ inputs.channel }}" == "production" ]; then
             echo "Publishing a production release: $curr_version"
             npm i
             npx tsc
