@@ -5,7 +5,9 @@ on:
     inputs:
       channel:
         type: choice
-        description: 'Choose the release channel/tag'
+        description: |
+          Choose the release channel/tag.
+          Make sure to update the version in package.json before publishing.
         options:
           - beta
           - production
@@ -31,8 +33,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          curr_version="$(pnpm pkg get version --workspace='@expediagroup/lodging-connectivity-sdk' | sed -n 's/.*"\(.*\)".*/\1/p')"
-          echo "Current version: $curr_version"
+          version="$(pnpm pkg get version --workspace='@expediagroup/lodging-connectivity-sdk' | sed -n 's/.*"\(.*\)".*/\1/p')"
+          echo "Current version: version"
           
           if [ "${{ inputs.channel }}" == "production" ]; then
             echo "Publishing a production release: $curr_version"
@@ -40,15 +42,6 @@ jobs:
             npx tsc
             npm publish
           elif [ "${{ inputs.channel }}" == "beta" ]; then
-            suffix_pattern="-beta.[0-9]+"
-
-            if [[ ! "$curr_version" =~ $suffix_pattern$ ]]; then
-              version="$curr_version-beta.$(date +%s)"
-            else
-              version="$curr_version"
-            fi
-          
-            echo "version: ||$version||"
             echo "Publishing a beta release: $version"
             npm version "$version" --allow-same-version
 
