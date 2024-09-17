@@ -49,8 +49,6 @@ jobs:
             echo "Publishing a production release: $version"
             pnpm run publish
           elif [ "${{ inputs.channel }}" == "beta" ]; then
-            echo "Unpublishing the existing version: $version"
-            pnpm unpublish @expediagroup/lodging-connectivity-sdk@$version
             echo "Publishing a beta release: $version"
             pnpm run publish-beta
           fi
