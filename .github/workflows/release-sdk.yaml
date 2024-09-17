@@ -44,12 +44,13 @@ jobs:
           echo "Current version: $version"
 
           pnpm i
-          
+
           if [ "${{ inputs.channel }}" == "production" ]; then
-            echo "Publishing a production release: $curr_version"
+            echo "Publishing a production release: $version"
             pnpm run publish
           elif [ "${{ inputs.channel }}" == "beta" ]; then
+            echo "Unpublishing the existing version: $version"
+            pnpm unpublish @expediagroup/lodging-connectivity-sdk@$version
             echo "Publishing a beta release: $version"
-            pnpm --filter '@expediagroup/lodging-connectivity-sdk' version "$version" --allow-same-version
             pnpm run publish-beta
           fi
