@@ -4,7 +4,8 @@
   "files": ["dist"],
   "scripts": {
     "build": "rollup -c ../rollup.config.js --bundleConfigAsCjs",
-    "publish": "pnpm run clean && pnpm run build && cd dist && pnpm publish --access public",
+    "publish": "pnpm run clean && pnpm run build && cd dist && pnpm publish --access public --no-git-checks",
+    "publish-beta": "pnpm run clean && pnpm run build && cd dist && pnpm publish --access public --tag beta --no-git-checks",
     "clean": "rimraf dist",
     "dev": "ts-node src/index.ts",
     "test": "jest",
