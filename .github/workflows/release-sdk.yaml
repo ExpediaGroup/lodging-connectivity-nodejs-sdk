@@ -39,16 +39,19 @@ jobs:
           cd code
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+          
+          echo "Unpublishing the existing version: $version"
+          pnpm unpublish @expediagroup/lodging-connectivity-sdk@0.0.2-beta
 
-          version="$(pnpm pkg get version --workspace='@expediagroup/lodging-connectivity-sdk' | sed -n 's/.*"\(.*\)".*/\1/p')"
-          echo "Current version: $version"
-
-          pnpm i
-
-          if [ "${{ inputs.channel }}" == "production" ]; then
-            echo "Publishing a production release: $version"
-            pnpm run publish:prod
-          elif [ "${{ inputs.channel }}" == "beta" ]; then
-            echo "Publishing a beta release: $version"
-            pnpm run publish:beta
-          fi
+#          version="$(pnpm pkg get version --workspace='@expediagroup/lodging-connectivity-sdk' | sed -n 's/.*"\(.*\)".*/\1/p')"
+#          echo "Current version: $version"
+#
+#          pnpm i
+#
+#          if [ "${{ inputs.channel }}" == "production" ]; then
+#            echo "Publishing a production release: $version"
+#            pnpm run publish:prod
+#          elif [ "${{ inputs.channel }}" == "beta" ]; then
+#            echo "Publishing a beta release: $version"
+#            pnpm run publish:beta
+#          fi
