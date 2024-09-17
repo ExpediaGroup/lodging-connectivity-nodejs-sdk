@@ -41,9 +41,11 @@ jobs:
           git config --local user.name "github-actions[bot]"
           
           echo "Unpublishing the existing version: $version"
-          pnpm unpublish @expediagroup/lodging-connectivity-sdk@0.0.3-beta
-          pnpm unpublish @expediagroup/lodging-connectivity-sdk@0.0.4-beta
-          pnpm unpublish @expediagroup/lodging-connectivity-sdk@0.0.5-beta
+          pnpm unpublish @expediagroup/lodging-connectivity-sdk@0.0.2-beta
+          pnpm unpublish @expediagroup/lodging-connectivity-sdk@0.0.2-beta-beta
+          pnpm unpublish @expediagroup/lodging-connectivity-sdk@0.0.3-beta-beta
+          pnpm unpublish @expediagroup/lodging-connectivity-sdk@0.0.4-beta-beta
+          pnpm unpublish @expediagroup/lodging-connectivity-sdk@0.0.5-beta-beta
 
 #          version="$(pnpm pkg get version --workspace='@expediagroup/lodging-connectivity-sdk' | sed -n 's/.*"\(.*\)".*/\1/p')"
 #          echo "Current version: $version"
