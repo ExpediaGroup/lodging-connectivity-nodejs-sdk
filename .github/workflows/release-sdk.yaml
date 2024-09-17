@@ -24,13 +24,11 @@ jobs:
           node-version: '20'
 
       - name: Release
-        working-directory: code
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          echo npm pkg get version
-          curr_version="$(npm pkg get version --workspace=@expediagroup/lodging-connectivity-sdk | sed "s/\"//g")"
+          curr_version="$(pnpm pkg get version --workspace='@expediagroup/lodging-connectivity-sdk' | sed -n 's/.*"\(.*\)".*/\1/p')"
           echo "Current version: $curr_version"
           
           if [ "${{ inputs.channel }}" == "production" ]; then
