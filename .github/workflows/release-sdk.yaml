@@ -30,13 +30,6 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - name: Check for uncommitted changes
-        run: |
-          if [[ -n $(git status --porcelain) ]]; then
-            git add .
-            git commit -m "Committing changes before release"
-          fi
-
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -45,20 +38,20 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git status
-          
+
           version="$(pnpm pkg get version --workspace='@expediagroup/lodging-connectivity-sdk' | sed -n 's/.*"\(.*\)".*/\1/p')"
           echo "Current version: $version"
-          
+
           if [ "${{ inputs.channel }}" == "production" ]; then
             echo "Publishing a production release: $curr_version"
             pnpm i
             pnpm tsc
-            pnpm publish
+            pnpm publish --no-git-checks
           elif [ "${{ inputs.channel }}" == "beta" ]; then
             echo "Publishing a beta release: $version"
             pnpm version "$version" --allow-same-version
 
             pnpm i
             pnpm tsc
-            pnpm publish --tag beta
+            pnpm publish --tag beta --no-git-checks
           fi
