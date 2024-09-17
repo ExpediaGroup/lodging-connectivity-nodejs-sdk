@@ -36,18 +36,17 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           version="$(pnpm pkg get version --workspace='@expediagroup/lodging-connectivity-sdk' | sed -n 's/.*"\(.*\)".*/\1/p')"
-          echo "Current version: version"
           
           if [ "${{ inputs.channel }}" == "production" ]; then
             echo "Publishing a production release: $curr_version"
-            npm i
+            pnpm i
             npx tsc
-            npm publish
+            pnpm publish
           elif [ "${{ inputs.channel }}" == "beta" ]; then
             echo "Publishing a beta release: $version"
-            npm version "$version" --allow-same-version
+            pnpm version "$version" --allow-same-version
 
-            npm i
+            pnpm i
             npx tsc
-            npm publish --tag beta
+            pnpm publish --tag beta
           fi
