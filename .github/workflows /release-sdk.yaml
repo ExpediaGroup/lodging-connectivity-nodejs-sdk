@@ -1,0 +1,51 @@
+name: Releasen SDK to NPM
+
+on:
+  workflow_call:
+    inputs:
+      channel:
+        type: choice
+        options:
+          - beta
+          - production
+        default: 'beta'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Release
+        working-directory: code
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          curr_version="$(npm pkg get version | sed "s/\"//g")"
+                    
+          if [ "${{ inputs.channel }}" == "productiobn" ]; then
+            echo "Publishing a production release: $curr_version"
+            npm i
+            npx tsc
+            npm publish
+          elif [ "${{ inputs.channel }}" == "beta" ]; then
+            suffix_pattern="-beta.[0-9]+"
+
+            if [[ ! "$curr_version" =~ $suffix_pattern$ ]]; then
+              version="$curr_version-beta.$(date +%s)"
+            else
+              version="$curr_version"
+            fi
+
+            echo "Publishing a beta release: $version"
+            npm version "$version" --allow-same-version
+
+            npm i
+            npx tsc
+            npm publish --tag beta
+          fi
