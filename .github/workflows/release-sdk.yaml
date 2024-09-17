@@ -44,7 +44,8 @@ jobs:
             else
               version="$curr_version"
             fi
-
+  
+            echo "version: ||$version||"
             echo "Publishing a beta release: $version"
             npm version "$version" --allow-same-version
 
