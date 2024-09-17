@@ -47,8 +47,8 @@ jobs:
 
           if [ "${{ inputs.channel }}" == "production" ]; then
             echo "Publishing a production release: $version"
-            pnpm run publish
+            pnpm run publish:prod
           elif [ "${{ inputs.channel }}" == "beta" ]; then
             echo "Publishing a beta release: $version"
-            pnpm run publish-beta
+            pnpm run publish:beta
           fi
