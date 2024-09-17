@@ -1,6 +1,6 @@
 {
   "name": "@expediagroup/lodging-connectivity-sdk",
-  "version": "0.0.2-beta",
+  "version": "0.0.3-beta",
   "files": ["dist"],
   "scripts": {
     "build": "rollup -c ../rollup.config.js --bundleConfigAsCjs",
