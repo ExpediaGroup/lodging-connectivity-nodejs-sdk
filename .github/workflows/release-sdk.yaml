@@ -47,9 +47,9 @@ jobs:
           
           if [ "${{ inputs.channel }}" == "production" ]; then
             echo "Publishing a production release: $curr_version"
-            pnpm publish --no-git-checks
+            pnpm publish --access public --no-git-checks
           elif [ "${{ inputs.channel }}" == "beta" ]; then
             echo "Publishing a beta release: $version"
             pnpm --filter '@expediagroup/lodging-connectivity-sdk' version "$version" --allow-same-version
-            pnpm publish --tag beta --no-git-checks
+            pnpm publish --access public --tag beta --no-git-checks
           fi
