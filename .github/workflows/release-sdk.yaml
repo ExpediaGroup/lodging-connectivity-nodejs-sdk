@@ -14,7 +14,7 @@ on:
         default: 'beta'
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,6 +29,13 @@ jobs:
 
       - name: Install pnpm
         run: npm install -g pnpm
+
+      - name: Check for uncommitted changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            git add .
+            git commit -m "Committing changes before release"
+          fi
 
       - name: Release
         env:
