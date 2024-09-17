@@ -40,12 +40,11 @@ jobs:
             else
               version="$curr_version"
             fi
-            echo "Publishing a beta release: $version"
 
+            echo "Publishing a beta release: $version"
             npm version "$version" --allow-same-version
 
             npm i
             npx tsc
             npm publish --tag beta
           fi
-  
