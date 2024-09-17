@@ -30,6 +30,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           curr_version="$(npm pkg get version | sed "s/\"//g")"
+          echo "Current version: $curr_version"
           
           if [ "${{ inputs.channel }}" == "production" ]; then
             echo "Publishing a production release: $curr_version"
