@@ -1,12 +1,9 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDir": "./",
-    "target": "es5",
-    "outDir": "lib",
+    "rootDir": ".",
     "declaration": true,
     "incremental": true,
-    "module": "ESNext",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "strictNullChecks": true,
@@ -14,12 +11,18 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "paths": {
-      "@expediagroup/lodging-connectivity-sdk/*": ["./code/src/*"]
-    },
-    "lib": [
-      "es2017"
-    ]
+      "@expediagroup/lodging-connectivity-sdk/*": [
+        "./code/src/*"
+      ]
+    }
   },
-  "include": ["code/src", "examples/src"],
+  "include": [
+    "code/src",
+    "examples/src"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }
 
