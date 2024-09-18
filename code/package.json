@@ -2,6 +2,11 @@
   "name": "@expediagroup/lodging-connectivity-sdk",
   "version": "1.0.0-beta.2",
   "files": ["dist"],
+  "exports": {
+    "./src/supply": "./dist/supply/index.js",
+    "./src/sandbox": "./dist/sandbox/index.js",
+    "./src/payment": "./dist/payment/index.js"
+  },
   "scripts": {
     "build": "rollup -c ../rollup.config.js --bundleConfigAsCjs",
     "prepublishOnly": "pnpm run clean && pnpm run build",
