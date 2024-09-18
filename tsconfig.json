@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "rootDir": ".",
     "declaration": true,
-    "incremental": true,
+//    "incremental": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "strictNullChecks": true,

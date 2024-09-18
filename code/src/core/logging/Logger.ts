@@ -18,7 +18,7 @@
  * Do not edit the class manually.
  */
 
-import winston from 'winston';
+import * as winston from 'winston';
 
 export interface Logger {
   info: (message: string) => void;
