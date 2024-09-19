@@ -19,20 +19,27 @@ export default [
         dir: 'dist', // Output directory for all chunks
         format: 'es', // Use 'es' for module splitting or 'cjs' for CommonJS
         entryFileNames: '[name]/index.esm.js', // Separate output for each entry point
-        chunkFileNames: 'shared/[name].esm.js', // Shared chunks go into 'shared'
+        chunkFileNames: 'shared/[name]-[hash].esm.js',
       },
       {
         dir: 'dist',
         format: 'cjs',
         entryFileNames: '[name]/index.cjs.js',
-        chunkFileNames: 'shared/[name].cjs.js',
+        chunkFileNames: 'shared/[name]-[hash].cjs.js',
       },
     ],
     plugins: [
       typescript({ declaration: false }),
       nodeResolve(), 
       commonjs(), 
-      terser(), 
+      terser({
+        format: {
+          comments: false,
+        },
+        compress: {
+          drop_console: true
+        },
+      }),
       json()
     ],
     external: ['@apollo/client', 'axios', 'graphql', 'lodash', 'winston', 'node-fetch'],
