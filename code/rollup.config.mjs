@@ -1,3 +1,5 @@
+import { readdirSync, statSync, existsSync } from 'fs';
+import { join } from 'path';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import nodeResolve from '@rollup/plugin-node-resolve';
@@ -5,11 +7,34 @@ import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 
-const modules = {
-  supply: 'src/supply/index.ts',
-  sandbox: 'src/sandbox/index.ts',
-  payment: 'src/payment/index.ts'
-};
+// Utility to get all directories within the src folder and check for index.ts
+function getModulesWithIndexTs(source) {
+  const entries = {};
+
+  // Check for root-level index.ts
+  const rootIndex = join(source, 'index.ts');
+  if (existsSync(rootIndex)) {
+    entries['.'] = rootIndex;  // Add root index.ts
+  }
+
+  // Check for index.ts in each subdirectory
+  const subDirs = readdirSync(source);
+  subDirs.forEach(name => {
+    const folderPath = join(source, name);
+    const indexPath = join(folderPath, 'index.ts');
+
+    // Check if the path is a directory and contains an index.ts file
+    if (statSync(folderPath).isDirectory() && existsSync(indexPath)) {
+      entries[name] = indexPath;  // Add module if index.ts exists
+    }
+  });
+
+  return entries;
+}
+
+// Get all subdirectories inside the "src" folder that have index.ts
+const srcDir = 'src';
+const modules = getModulesWithIndexTs(srcDir);
 
 export default [
   {
@@ -17,7 +42,7 @@ export default [
     output: [
       {
         dir: 'dist', // Output directory for all chunks
-        format: 'es', // Use 'es' for module splitting or 'cjs' for CommonJS
+        format: 'es',
         entryFileNames: '[name]/index.esm.js', // Separate output for each entry point
         chunkFileNames: 'shared/[name]-[hash].esm.js',
       },
@@ -48,7 +73,7 @@ export default [
     input: modules,
     output: {
       dir: 'dist',
-      entryFileNames: '[name]/index.d.ts', // Separate output for each entry point
+      entryFileNames: '[name]/index.d.ts',
       chunkFileNames: 'shared/[name].d.ts',
     },
     plugins: [dts()]
