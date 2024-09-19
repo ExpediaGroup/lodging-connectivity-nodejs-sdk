@@ -21,7 +21,6 @@
 import { ApolloClient, HttpLink, InMemoryCache, NormalizedCacheObject } from '@apollo/client/core';
 import { Client, ClientConfigurations } from '../core/client/Client';
 
-
 export abstract class BaseGraphQLClient {
   private readonly coreClient: Client;
   private readonly clientConfiguration: ClientConfigurations;
@@ -33,16 +32,12 @@ export abstract class BaseGraphQLClient {
     this.apolloClient = this.initializeApolloClient();
   }
 
-  public query: typeof this.apolloClient.query = async (options) => {
+  public query: typeof ApolloClient.prototype.query = async (options) => {
     return await this.apolloClient.query(options);
   };
 
-  public mutate: typeof this.apolloClient.mutate = async (options) => {
+  public mutate: typeof ApolloClient.prototype.mutate = async (options) => {
     return await this.apolloClient.mutate(options);
-  };
-
-  public subscribe: typeof this.apolloClient.subscribe = (options) => {
-    return this.apolloClient.subscribe(options);
   };
 
   private initializeApolloClient() {
@@ -51,9 +46,6 @@ export abstract class BaseGraphQLClient {
       cache: new InMemoryCache(),
       link: new HttpLink({
         uri: this.clientConfiguration.endpoint,
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         fetch: this.coreClient.fetch.bind(this.coreClient)
       })
     });

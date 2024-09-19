@@ -32,6 +32,9 @@
     "lint": "eslint 'src/**/*.ts'",
     "format": "prettier --write 'src/**/*.ts'",
     "codegen": "graphql-codegen",
+    "codegen:supply": "graphql-codegen --config ./codegen-configs/supply-codegen.config.ts",
+    "codegen:sandbox": "graphql-codegen --config ./codegen-configs/sandbox-codegen.config.ts",
+    "codegen:payment": "graphql-codegen --config ./codegen-configs/payment-codegen.config.ts",
     "publish:prod": "pnpm clean && pnpm build && pnpm publish --access public --no-git-checks",
     "publish:beta": "pnpm clean && pnpm build && pnpm publish --access public --tag beta --no-git-checks"
   },
@@ -41,6 +44,7 @@
   "description": "",
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/import-types-preset": "^3.0.0",
     "@graphql-codegen/typed-document-node": "^5.0.9",
     "@graphql-codegen/typescript": "^4.0.9",
     "@graphql-codegen/typescript-operations": "^4.2.3",
@@ -50,10 +54,10 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
+    "@types/lodash": "^4.17.7",
     "axios-mock-adapter": "^1.22.0",
     "rollup": "^4.20.0",
-    "rollup-plugin-dts": "^5.2.0",
-    "@types/lodash": "^4.17.7"
+    "rollup-plugin-dts": "^5.2.0"
   },
   "dependencies": {
     "@apollo/client": "^3.10.8",
