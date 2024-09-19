@@ -5,35 +5,45 @@ import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 
+const modules = {
+  supply: 'src/supply/index.ts',
+  sandbox: 'src/sandbox/index.ts',
+  payment: 'src/payment/index.ts'
+};
+
 export default [
   {
-    input: 'src/index.ts',
+    input: modules,
     output: [
       {
-        file: './dist/index.esm.js',
-        format: 'es'
+        dir: 'dist', // Output directory for all chunks
+        format: 'es', // Use 'es' for module splitting or 'cjs' for CommonJS
+        entryFileNames: '[name]/index.esm.js', // Separate output for each entry point
+        chunkFileNames: 'shared/[name].esm.js', // Shared chunks go into 'shared'
       },
       {
-        file: './dist/index.cjs.js',
-        format: 'cjs'
+        dir: 'dist',
+        format: 'cjs',
+        entryFileNames: '[name]/index.cjs.js',
+        chunkFileNames: 'shared/[name].cjs.js',
       },
     ],
     plugins: [
-      typescript({
-        declaration: false,
-      }),
-      commonjs(),
-      nodeResolve(),
-      json(),
-      terser()
-    ]
+      typescript({ declaration: false }),
+      nodeResolve(), 
+      commonjs(), 
+      terser(), 
+      json()
+    ],
+    external: ['@apollo/client', 'axios', 'graphql', 'lodash', 'winston', 'node-fetch'],
   },
   {
-    input: './src/index.ts',
+    input: modules,
     output: {
-      file: './dist/index.d.ts'
+      dir: 'dist',
+      entryFileNames: '[name]/index.d.ts', // Separate output for each entry point
+      chunkFileNames: 'shared/[name].d.ts',
     },
-    plugins: [dts()],
-  },
-
+    plugins: [dts()]
+  }
 ];
