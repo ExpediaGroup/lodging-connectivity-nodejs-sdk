@@ -65,9 +65,6 @@ importers:
       '@apollo/client':
         specifier: ^3.10.8
         version: 3.11.2(graphql-ws@5.16.0(graphql@16.9.0))(graphql@16.9.0)
-      '@types/lodash':
-        specifier: ^4.17.7
-        version: 4.17.7
       axios:
         specifier: ^1.7.2
         version: 1.7.3
@@ -117,6 +114,9 @@ importers:
       '@rollup/plugin-typescript':
         specifier: ^11.1.6
         version: 11.1.6(rollup@4.20.0)(tslib@2.6.3)(typescript@5.5.4)
+      '@types/lodash':
+        specifier: ^4.17.7
+        version: 4.17.7
       axios-mock-adapter:
         specifier: ^1.22.0
         version: 1.22.0(axios@1.7.3)
@@ -130,8 +130,8 @@ importers:
   examples:
     dependencies:
       '@expediagroup/lodging-connectivity-sdk':
-        specifier: 1.0.0-beta.6
-        version: 1.0.0-beta.6(graphql-ws@5.16.0(graphql@16.9.0))
+        specifier: workspace:*
+        version: link:../code
 
 packages:
 
@@ -524,9 +524,6 @@ packages:
   '@eslint/js@8.57.0':
     resolution: {integrity: sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-
-  '@expediagroup/lodging-connectivity-sdk@1.0.0-beta.6':
-    resolution: {integrity: sha512-ce1Tj3WrGoGkyXK72VlHe9FsqaJij34Lbt8US2wdtyoW5MUFlU4WKCiskNZ9Bon99NKGDMZHJFWD5L43y9eUIw==}
 
   '@graphql-codegen/add@5.0.3':
     resolution: {integrity: sha512-SxXPmramkth8XtBlAHu4H4jYcYXM/o3p01+psU+0NADQowA8jtYkK6MW5rV6T+CxkEaNZItfSmZRPgIuypcqnA==}
@@ -4154,25 +4151,6 @@ snapshots:
       - supports-color
 
   '@eslint/js@8.57.0': {}
-
-  '@expediagroup/lodging-connectivity-sdk@1.0.0-beta.6(graphql-ws@5.16.0(graphql@16.9.0))':
-    dependencies:
-      '@apollo/client': 3.11.2(graphql-ws@5.16.0(graphql@16.9.0))(graphql@16.9.0)
-      '@types/lodash': 4.17.7
-      axios: 1.7.3
-      graphql: 16.9.0
-      lodash: 4.17.21
-      node-fetch: 2.7.0
-      typescript-json-serializer: 6.0.1
-      winston: 3.13.1
-    transitivePeerDependencies:
-      - '@types/react'
-      - debug
-      - encoding
-      - graphql-ws
-      - react
-      - react-dom
-      - subscriptions-transport-ws
 
   '@graphql-codegen/add@5.0.3(graphql@16.9.0)':
     dependencies:
