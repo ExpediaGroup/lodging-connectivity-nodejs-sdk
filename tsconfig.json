@@ -4,15 +4,18 @@
     "rootDir": ".",
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "moduleResolution": "node",
     "strictNullChecks": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
-    "paths": {
-      "@expediagroup/lodging-connectivity-sdk/*": [
-        "./code/src/*"
-      ]
-    }
+    "lib": [
+      "es2017"
+    ]
+//    "paths": {
+//      "@expediagroup/lodging-connectivity-sdk/*": [
+//        "./code/src/*"
+//      ]
+//    }
   },
   "include": [
     "code/src",
