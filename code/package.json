@@ -26,7 +26,6 @@
     "test": "jest",
     "lint": "eslint 'src/**/*.ts'",
     "format": "prettier --write 'src/**/*.ts'",
-    "codegen": "graphql-codegen",
     "codegen:supply": "graphql-codegen --config ./codegen-configs/supply-codegen.config.ts",
     "codegen:sandbox": "graphql-codegen --config ./codegen-configs/sandbox-codegen.config.ts",
     "codegen:payment": "graphql-codegen --config ./codegen-configs/payment-codegen.config.ts",

@@ -82,6 +82,13 @@ export type ChangeReservationStayDatesPayload = {
   reservation: Reservation;
 };
 
+export type CreateDatasetPayload = {
+  __typename?: 'CreateDatasetPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  propertyId: Scalars['String']['output'];
+  result: Array<Scalars['String']['output']>;
+};
+
 /** Input object for creating a property. */
 export type CreatePropertyInput = {
   /** Client mutation ID. Optional value that is echoed back in the response. */
@@ -121,6 +128,8 @@ export type CreateReservationInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
   /** Text that is displayed to guests if there are multiple rooms associated with the reservation. */
   multiRoomText?: InputMaybe<Scalars['String']['input']>;
+  /** Type of payment instrument. Defaults to EXPEDIA_VIRTUAL_CARD in case of EXPEDIA_COLLECT else GUEST_CREDIT_CARD. */
+  paymentInstrumentType?: InputMaybe<PaymentInstrumentTypeInput>;
   /** Guest who made the reservation. Guest personal information cannot be set and is automatically generated. */
   primaryGuest?: InputMaybe<GuestInput>;
   /** Property id on which to associate the reservation. */
@@ -315,6 +324,11 @@ export type Mutation = {
    */
   deleteReservation: DeleteReservationPayload;
   /**
+   * Creates test data for a given capability and scenario.
+   * The mutation is currently setup to setup reservation specific test data but this can be extended to other capabilities.
+   */
+  setupTestData: CreateDatasetPayload;
+  /**
    * Updates a property in the sandbox environment.
    *
    * The mutation accepts an optional name for the property. Unspecified
@@ -369,6 +383,11 @@ export type MutationDeleteReservationArgs = {
 };
 
 
+export type MutationSetupTestDataArgs = {
+  input: SetupTestDataInput;
+};
+
+
 export type MutationUpdatePropertyArgs = {
   input: UpdatePropertyInput;
 };
@@ -388,8 +407,22 @@ export type Payment = {
   /** Type of payment instrument. Sandbox value is "GUEST_CREDIT_CARD" for HOTEL_COLLECT reservations and "EXPEDIA_VIRTUAL_CARD" for EXPEDIA_COLLECT reservations. */
   paymentInstrumentType: Scalars['String']['output'];
   /** Randomly generated 3-digits verification number associated with the card. */
-  verificationNumber: Scalars['String']['output'];
+  verificationNumber?: Maybe<Scalars['String']['output']>;
 };
+
+/** Type of payment instrument. */
+export enum PaymentInstrumentTypeInput {
+  /** Expedia collects payment via Bank Transfer. */
+  BankTransfer = 'BANK_TRANSFER',
+  /** Property collects payment via Cash. */
+  Cash = 'CASH',
+  /** Expedia collects payment via Expedia Virtual card. */
+  ExpediaVirtualCard = 'EXPEDIA_VIRTUAL_CARD',
+  /** Property collects payment via Guest credit card. */
+  GuestCreditCard = 'GUEST_CREDIT_CARD',
+  /** No payment instrument. */
+  None = 'NONE'
+}
 
 /** Response object for property query. */
 export type PropertiesResponse = {
@@ -509,7 +542,10 @@ export type Reservation = {
   amounts?: Maybe<ReservationAmounts>;
   /** Bed type of the reservation. */
   bedTypes?: Maybe<Scalars['String']['output']>;
-  /** Source of the reservation booking. */
+  /**
+   * Source of the reservation booking.
+   * @deprecated Use source field instead.
+   */
   bookingSource: BookingSource;
   /** Entity that collects payment for the reservation. */
   businessModel: BusinessModel;
@@ -547,6 +583,8 @@ export type Reservation = {
   reservationIds: Array<IdNode>;
   /** Whether smoking is allowed for the reservation. */
   smokingType: Scalars['String']['output'];
+  /** Source of the reservation booking. */
+  source: Scalars['String']['output'];
   /** ext that is displayed to guests if there is a special request associated with the reservation. */
   specialRequest?: Maybe<Scalars['String']['output']>;
   /** Current status of the reservation. */
@@ -657,6 +695,13 @@ export type ReservationsResponse = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type SetupTestDataInput = {
+  capability: TestDataCapability;
+  clientMutationIds?: InputMaybe<Scalars['String']['input']>;
+  propertyId?: InputMaybe<Scalars['String']['input']>;
+  scenario: TestDataScenario;
+};
+
 /** Details about the frequent traveler reward program. */
 export type SupplierLoyaltyPlanInfo = {
   __typename?: 'SupplierLoyaltyPlanInfo';
@@ -673,6 +718,16 @@ export type SupplierLoyaltyPlanInfoInput = {
   /** Reward program code. */
   planCode: Scalars['String']['input'];
 };
+
+export enum TestDataCapability {
+  ReservationCoreOta = 'RESERVATION_CORE_OTA'
+}
+
+export enum TestDataScenario {
+  Step_01ResCreateAndCancelRecon = 'STEP_01_RES_CREATE_AND_CANCEL_RECON',
+  Step_02SoftHardModAndCreateRes = 'STEP_02_SOFT_HARD_MOD_AND_CREATE_RES',
+  Step_03SoftHardMod = 'STEP_03_SOFT_HARD_MOD'
+}
 
 /** Input object for updating a property. */
 export type UpdatePropertyInput = {
@@ -712,7 +767,7 @@ export type UpdateReservationInput = {
   /** Whether to send a notification upon the change of the reservation dates. */
   sendNotification?: InputMaybe<Scalars['Boolean']['input']>;
   /** New special request text of the reservation. */
-  specialRequestText?: InputMaybe<Scalars['String']['input']>;
+  specialRequest?: InputMaybe<Scalars['String']['input']>;
   /** New status of the reservation. */
   status?: InputMaybe<ReservationStatusInput>;
 };
