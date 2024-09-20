@@ -8,20 +8,15 @@
   "module": "./dist/index.esm.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    "./supply": {
-      "require": "./dist/supply/index.cjs.js",
-      "import": "./dist/supply/index.esm.js",
-      "types": "./dist/supply/index.d.ts"
+    ".": {
+      "require": "./dist/index.cjs.js",
+      "import": "./dist/index.esm.js",
+      "types": "./dist/index.d.ts"
     },
-    "./sandbox": {
-      "require": "./dist/sandbox/index.cjs.js",
-      "import": "./dist/sandbox/index.esm.js",
-      "types": "./dist/sandbox/index.d.ts"
-    },
-    "./payment": {
-      "require": "./dist/payment/index.cjs.js",
-      "import": "./dist/payment/index.esm.js",
-      "types": "./dist/payment/index.d.ts"
+    "./*": {
+      "require": "./dist/*/index.cjs.js",
+      "import": "./dist/*/index.esm.js",
+      "types": "./dist/*/index.d.ts"
     }
   },
   "scripts": {

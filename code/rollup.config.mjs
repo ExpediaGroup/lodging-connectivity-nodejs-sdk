@@ -7,7 +7,7 @@ import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 
-// Utility to get all directories within the src folder and check for index.ts
+// Utility to get all directories within the source folder and check for index.ts
 function getModulesWithIndexTs(source) {
   const entries = {};
 
@@ -32,8 +32,7 @@ function getModulesWithIndexTs(source) {
   return entries;
 }
 
-// Get all subdirectories inside the "src" folder that have index.ts
-const srcDir = 'src';
+const srcDir = 'src/modules';
 const modules = getModulesWithIndexTs(srcDir);
 
 export default [
@@ -41,9 +40,9 @@ export default [
     input: modules,
     output: [
       {
-        dir: 'dist', // Output directory for all chunks
+        dir: 'dist',
         format: 'es',
-        entryFileNames: '[name]/index.esm.js', // Separate output for each entry point
+        entryFileNames: '[name]/index.esm.js',
         chunkFileNames: 'shared/[name]-[hash].esm.js',
       },
       {

@@ -4,12 +4,12 @@ const config: CodegenConfig = {
   schema: 'src/graphql-definitions/sandbox/schema.graphqls',
   documents: 'src/graphql-definitions/sandbox/**/*.graphql',
   generates: {
-    'src/sandbox/__generated__/types.ts': {
+    'src/modules/sandbox/__generated__/types.ts': {
       plugins: [
         'typescript'
       ]
     },
-    'src/sandbox/__generated__/operations.ts': {
+    'src/modules/sandbox/__generated__/operations.ts': {
       preset: 'import-types',
       presetConfig: {
         typesPath: './types'

@@ -18,8 +18,8 @@
  * Do not edit the class manually.
  */
 
-import { BaseGraphQLClient } from '../common/BaseGraphQLClient';
-import { ClientConfigurations } from '../core/client/Client';
+import { BaseGraphQLClient } from '../../common/BaseGraphQLClient';
+import { ClientConfigurations } from '../../core/client/Client';
 
 export class SupplyClient extends BaseGraphQLClient {
   constructor(config: ClientConfigurations) {
