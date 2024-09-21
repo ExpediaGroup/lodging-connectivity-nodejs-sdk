@@ -18,14 +18,12 @@
  * Do not edit the class manually.
  */
 
-import { BaseGraphQLClient } from '../../common/BaseGraphQLClient';
-import { ClientConfigurations } from '../../core/client/Client';
+import { ClientEnvironment } from './ClientEnvironment';
 
-export class PaymentClient extends BaseGraphQLClient {
-  constructor(config: ClientConfigurations) {
-    super({
-      ...config,
-      endpoint: `${config.endpoint}supply/payments/graphql`
-    });
-  }
+export interface ClientConfiguration {
+  readonly key: string,
+  readonly secret: string,
+  readonly environment?: ClientEnvironment,
+  readonly requestTimeout?: number,
+  readonly userAgent?: string
 }

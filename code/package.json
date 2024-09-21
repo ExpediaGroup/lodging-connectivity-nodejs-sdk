@@ -22,7 +22,6 @@
   "scripts": {
     "build": "rollup -c",
     "clean": "rimraf dist",
-    "dev": "ts-node src/index.ts",
     "test": "jest",
     "lint": "eslint 'src/**/*.ts'",
     "format": "prettier --write 'src/**/*.ts'",
