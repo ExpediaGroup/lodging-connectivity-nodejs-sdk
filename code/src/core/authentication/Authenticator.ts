@@ -64,11 +64,11 @@ class Authenticator {
         this.axiosClient.defaults.headers.common[Constant.AUTHORIZATION] = auth;
         requestConfig.headers.setAuthorization(auth);
       }
-      this.log.info(inspect(maskRequestConfig(requestConfig)));
+      this.log.info(`OUTGOING REQUEST: ${inspect(maskRequestConfig(requestConfig))}`);
       return requestConfig;
     });
     this.axiosClient.interceptors.response.use((response: AxiosResponse<any, any>) => {
-      this.log.info(inspect(maskResponse(response)));
+      this.log.info(`INCOMING RESPONSE: ${inspect(maskResponse(response))}`);
       return response;
     });
   }
