@@ -18,14 +18,18 @@
  * Do not edit the class manually.
  */
 
-import { BaseGraphQLClient } from '../../common/BaseGraphQLClient';
-import { ClientConfigurations } from '../../core/client/Client';
+import { BaseGraphQLClient, ClientConfiguration, ClientEnvironment, EndpointProvider } from '../../common';
 
 export class SupplyClient extends BaseGraphQLClient {
-  constructor(config: ClientConfigurations) {
+  constructor(config: ClientConfiguration) {
+    const env = config.environment ?? ClientEnvironment.PROD;
+
     super({
-      ...config,
-      endpoint: `${config.endpoint}supply/lodging/graphql`
+      key: config.key,
+      secret: config.secret,
+      endpoint: EndpointProvider.getSupplyClientEndpoint(config.environment ?? env),
+      authEndpoint: EndpointProvider.getAuthEndpoint(config.environment ?? env),
+      requestTimeout: config.requestTimeout
     });
   }
 }

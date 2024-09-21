@@ -18,14 +18,18 @@
  * Do not edit the class manually.
  */
 
-import { BaseGraphQLClient } from '../../common/BaseGraphQLClient';
-import { ClientConfigurations } from '../../core/client/Client';
+import { BaseGraphQLClient, ClientConfiguration, ClientEnvironment, EndpointProvider } from '../../common';
 
 export class SandboxClient extends BaseGraphQLClient {
-  constructor(config: ClientConfigurations) {
+  constructor(config: ClientConfiguration) {
+    const env = config.environment ?? ClientEnvironment.PROD;
+
     super({
-      ...config,
-      endpoint: `${config.endpoint}supply/lodging-sandbox/graphql`
+      key: config.key,
+      secret: config.secret,
+      endpoint: EndpointProvider.getSandboxClientEndpoint(config.environment ?? env),
+      authEndpoint: EndpointProvider.getAuthEndpoint(config.environment ?? env),
+      requestTimeout: config.requestTimeout
     });
   }
 }

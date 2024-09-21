@@ -15,10 +15,8 @@ import {
 export class SandboxClientExample {
 
   private static readonly sandboxClient = new SandboxClient({
-    key: '',
-    secret: '',
-    endpoint: 'https://test-api.sandbox.expediagroup.com/',
-    authEndpoint: 'https://test-api.expediagroup.com/identity/oauth2/v3/token'
+    key: 'KEY',
+    secret: 'SECRET'
   });
 
   private static readonly PROPERTY_NAME = 'Lodging SDK Test Property';

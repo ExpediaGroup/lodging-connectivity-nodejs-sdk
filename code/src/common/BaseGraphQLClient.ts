@@ -19,16 +19,17 @@
  */
 
 import { ApolloClient, HttpLink, InMemoryCache, NormalizedCacheObject } from '@apollo/client/core';
-import { Client, ClientConfigurations } from '../core/client/Client';
+import { ClientConfigurations } from '../core/client/Client';
+import { ApolloAxiosClient } from './ApolloAxiosClient';
 
 export abstract class BaseGraphQLClient {
-  private readonly coreClient: Client;
+  private readonly apolloAxiosClient: ApolloAxiosClient;
   private readonly clientConfiguration: ClientConfigurations;
   private readonly apolloClient: ApolloClient<NormalizedCacheObject>;
 
   protected constructor(clientConfig: ClientConfigurations) {
     this.clientConfiguration = clientConfig;
-    this.coreClient = new Client(clientConfig);
+    this.apolloAxiosClient = new ApolloAxiosClient(clientConfig);
     this.apolloClient = this.initializeApolloClient();
   }
 
@@ -46,7 +47,7 @@ export abstract class BaseGraphQLClient {
       cache: new InMemoryCache(),
       link: new HttpLink({
         uri: this.clientConfiguration.endpoint,
-        fetch: this.coreClient.fetch.bind(this.coreClient)
+        fetch: this.apolloAxiosClient.fetch.bind(this.apolloAxiosClient)
       })
     });
   }
