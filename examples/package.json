@@ -3,7 +3,7 @@
   "main": "index.ts",
   "private": true,
   "scripts": {
-    "dev": "ts-node -r tsconfig-paths/register ./src/index.ts",
+    "dev": "ts-node ./src/index.ts",
     "clean": "rimraf dist",
     "lint": "eslint 'src/**/*.ts'",
     "format": "prettier --write 'src/**/*.ts'"
