@@ -1,6 +1,5 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders, RawAxiosResponseHeaders } from 'axios';
 import { HeaderInit, HeadersInit, RequestInit, Response } from 'node-fetch';
-import { maskResponse } from '../../core/logging/LogMasker';
 
 /*
 * Utility class used to translate requests/responses between Axios and node-fetch client.
@@ -54,11 +53,10 @@ export class ApolloAxiosClientHelpers {
   }
 
   public static buildFetchResponseFromAxiosResponse(axiosResponse: AxiosResponse): Response {
-    const maskedResponse = maskResponse(axiosResponse);
-    return new Response(JSON.stringify(maskedResponse.data), {
+    return new Response(JSON.stringify(axiosResponse.data), {
       status: axiosResponse.status,
       statusText: axiosResponse.statusText,
-      headers: this.convertAxiosHeadersToFetchHeaders(maskedResponse.headers)
+      headers: this.convertAxiosHeadersToFetchHeaders(axiosResponse.headers)
     });
   }
 }
