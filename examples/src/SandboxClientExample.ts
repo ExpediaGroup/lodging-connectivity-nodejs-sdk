@@ -1,7 +1,7 @@
 import {
+  SandboxClient,
   SandboxCancelReservationDocument,
   SandboxChangeReservationStayDatesDocument,
-  SandboxClient,
   SandboxCreatePropertyDocument,
   SandboxCreateReservationDocument,
   SandboxDeletePropertyDocument,
@@ -9,16 +9,12 @@ import {
   SandboxPropertiesDocument,
   SandboxUpdatePropertyDocument,
   SandboxUpdateReservationDocument
-} from '@expediagroup/lodging-connectivity-sdk/sandbox';
-
+} from '@expediagroup/lodging-connectivity-sdk';
 
 export class SandboxClientExample {
-
   private static readonly sandboxClient = new SandboxClient({
-    key: '',
-    secret: '',
-    endpoint: 'https://test-api.sandbox.expediagroup.com/',
-    authEndpoint: 'https://test-api.expediagroup.com/identity/oauth2/v3/token'
+    key: 'KEY',
+    secret: 'SECRET'
   });
 
   private static readonly PROPERTY_NAME = 'Lodging SDK Test Property';
@@ -32,15 +28,11 @@ export class SandboxClientExample {
       variables: { input: { name: this.PROPERTY_NAME } }
     });
 
-    if (!createPropertyResponse.data || createPropertyResponse.errors) {
-      throw new Error('Could not create property');
-    }
-
-    const propertyId = createPropertyResponse.data.createProperty.property.id;
+    const propertyId = createPropertyResponse.createProperty.property.id;
 
     console.log(`Property with id "${propertyId}" was Created`);
 
-    const updatePropertyResponse = await this.sandboxClient.mutate({
+    await this.sandboxClient.mutate({
       mutation: SandboxUpdatePropertyDocument,
       variables: {
         input: {
@@ -49,10 +41,6 @@ export class SandboxClientExample {
         }
       }
     });
-
-    if (!updatePropertyResponse.data || updatePropertyResponse.errors) {
-      throw new Error('Could not update property');
-    }
 
     console.log(`Property with id "${propertyId}" was Updated`);
 
@@ -67,15 +55,11 @@ export class SandboxClientExample {
       }
     });
 
-    if (!createReservationResponse.data || createReservationResponse.errors) {
-      throw new Error('Could not create reservation on property');
-    }
-
-    const reservationId = createReservationResponse.data.createReservation.reservation.id;
+    const reservationId = createReservationResponse.createReservation.reservation.id;
 
     console.log(`Reservation with id "${reservationId}" was Created`);
 
-    const updateReservationResponse = await this.sandboxClient.mutate({
+    await this.sandboxClient.mutate({
       mutation: SandboxUpdateReservationDocument,
       variables: {
         input: {
@@ -85,13 +69,9 @@ export class SandboxClientExample {
       }
     });
 
-    if (!updateReservationResponse.data || updateReservationResponse.errors) {
-      throw new Error(`Could not update reservation ${reservationId}`);
-    }
-
     console.log(`Reservation with id "${reservationId}" was Updated`);
 
-    const changeStayDatesResponse = await this.sandboxClient.mutate({
+    await this.sandboxClient.mutate({
       mutation: SandboxChangeReservationStayDatesDocument,
       variables: {
         input: {
@@ -102,13 +82,9 @@ export class SandboxClientExample {
       }
     });
 
-    if (!changeStayDatesResponse.data || changeStayDatesResponse.errors) {
-      throw new Error(`Could not update reservation ${reservationId}`);
-    }
-
     console.log(`Reservation with id "${reservationId}" stay dates were Updated`);
 
-    const cancelReservationResponse = await this.sandboxClient.mutate({
+    await this.sandboxClient.mutate({
       mutation: SandboxCancelReservationDocument,
       variables: {
         input: {
@@ -117,13 +93,9 @@ export class SandboxClientExample {
       }
     });
 
-    if (!cancelReservationResponse.data || cancelReservationResponse.errors) {
-      throw new Error(`Could not cancel reservation ${reservationId}`);
-    }
-
     console.log(`Reservation with id "${reservationId}" was Canceled`);
 
-    const deleteReservationResponse = await this.sandboxClient.mutate({
+    await this.sandboxClient.mutate({
       mutation: SandboxDeleteReservationDocument,
       variables: {
         input: {
@@ -132,13 +104,9 @@ export class SandboxClientExample {
       }
     });
 
-    if (!deleteReservationResponse.data || deleteReservationResponse.errors) {
-      throw new Error(`Could not delete reservation ${reservationId}`);
-    }
-
     console.log(`Reservation with id "${reservationId}" was deleted`);
 
-    const deletePropertyResponse = await this.sandboxClient.mutate({
+    await this.sandboxClient.mutate({
       mutation: SandboxDeletePropertyDocument,
       variables: {
         input: {
@@ -147,26 +115,18 @@ export class SandboxClientExample {
       }
     });
 
-    if (!deletePropertyResponse.data || deletePropertyResponse.errors) {
-      throw new Error(`Could not property ${propertyId}`);
-    }
-
     console.log(`Property with id "${propertyId}" was Deleted`);
   }
 
   private static async deletePropertyIfExists() {
-    const { data, error } = await this.sandboxClient.query({
+    const { properties } = await this.sandboxClient.query({
       query: SandboxPropertiesDocument,
       variables: {
         skipReservations: true
       }
     });
 
-    if (error || !data) {
-      throw new Error('Failed to get existing properties');
-    }
-
-    data.properties.elements.forEach(property => {
+    properties.elements.forEach(property => {
       if (property.name === this.PROPERTY_NAME || property.name === this.UPDATED_PROPERTY_NAME) {
         console.log('Deleting existing property: ID: ' + property.id + ', Name: ' + property.name);
         this.sandboxClient.mutate({

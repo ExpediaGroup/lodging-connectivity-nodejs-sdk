@@ -1,24 +1,11 @@
 {
   "name": "lodging-connectivity-nodejs-sdk",
-  "version": "0.0.2-SNAPSHOT",
-  "license": "ISC",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/ExpediaGroup/lodging-connectivity-nodejs-sdk"
   },
-  "scripts": {
-    "build": "pnpm -r run build",
-    "clean": "pnpm -r run clean",
-    "test": "pnpm -r run test",
-    "lint": "pnpm -r run lint",
-    "format": "pnpm -r run format",
-    "examples": "pnpm --filter examples run dev",
-    "publish:code": "pnpm --filter @expediagroup/lodging-connectivity-sdk run publish"
-  },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^26.0.1",
-    "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^15.2.3",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.11",
     "@types/node-fetch": "^2.6.11",
@@ -30,13 +17,9 @@
     "jest": "^29.7.0",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
-    "rollup": "^4.20.0",
-    "rollup-plugin-tsconfig-paths": "^1.5.2",
-    "rollup-plugin-typescript2": "^0.36.0",
     "ts-jest": "^29.2.3",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "tsconfig-paths": "^4.2.0",
     "tslib": "^2.6.3",
     "typescript": "^5.5.4"
   },

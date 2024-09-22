@@ -1,4 +1,3 @@
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -15,6 +14,8 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** An ISO 3166-1 alpha-3 CountryCode Scalar */
   CountryCode: { input: any; output: any; }
+  /** An ISO-4217 compliant Currency Scalar */
+  Currency: { input: any; output: any; }
   /** A 3-letter currency code defined in ISO 4217 scalar */
   CurrencyCode: { input: any; output: any; }
   /** An RFC-3339 compliant Full Date Scalar */
@@ -159,6 +160,15 @@ export enum AdoptionType {
   Unrecognized = 'UNRECOGNIZED'
 }
 
+export enum AgeCategory {
+  Adult = 'ADULT',
+  ChildA = 'CHILD_A',
+  ChildB = 'CHILD_B',
+  ChildC = 'CHILD_C',
+  ChildD = 'CHILD_D',
+  Infant = 'INFANT'
+}
+
 export type AgeRange = {
   __typename?: 'AgeRange';
   maxAge?: Maybe<Scalars['Int']['output']>;
@@ -192,7 +202,6 @@ export type AggregatedReviewsFiltersInput = {
 
 export type AggregatedReviewsResponse = {
   __typename?: 'AggregatedReviewsResponse';
-  /** all the brands and their respective aggregated score  for the property */
   brandsWithScores: Array<AggregatedReviewBrandScore>;
 };
 
@@ -531,7 +540,15 @@ export type BookingLocalDateTimeInput = {
 export type BookingPolicy = {
   __typename?: 'BookingPolicy';
   acceptedPaymentForms?: Maybe<AcceptedPaymentForms>;
+  /** The age categories that are allowed to stay at the hotel */
+  allowedAgeCategories: Array<AgeCategory>;
   bookingType?: Maybe<Scalars['String']['output']>;
+  /** The time of day when a cancellation must be processed before occurring inside window cancellation charges */
+  cancellationTime: Scalars['LocalTime']['output'];
+  /** The day at which the hotel wishes to make its inventory available until for same day bookings */
+  cutoffDay: CutoffDayType;
+  /** The time at which the hotel wishes to make its inventory available until for same day bookings */
+  cutoffTime: Scalars['LocalTime']['output'];
 };
 
 export type BookingPolicyInput = {
@@ -589,9 +606,7 @@ export type CancelReservationReconciliationPayload = {
 };
 
 export type CancelVrboReservationInput = {
-  /** Cancel Action to be taken */
-  cancellationPolicyAction: VrboCancellationPolicyAction;
-  /** Cancellation Policy Override - Only valid when cancellationPolicyAction is OVERRIDE_WITH_PENALTY */
+  /** Cancellation Policy Override */
   cancellationPolicyOverride?: InputMaybe<VrboCancellationPolicyOverride>;
   /** Partner supplied Unique mutation identifier */
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
@@ -864,23 +879,6 @@ export type ConfirmReservationNotificationPayload = {
   reservation?: Maybe<Reservation>;
 };
 
-export type Contact = {
-  __typename?: 'Contact';
-  emailAddresses?: Maybe<Array<Scalars['String']['output']>>;
-  name?: Maybe<Scalars['String']['output']>;
-  phoneNumbers?: Maybe<Array<PhoneNumber>>;
-  type: ContactType;
-};
-
-export enum ContactType {
-  Property = 'PROPERTY'
-}
-
-export type ContactTypeFilterInput = {
-  operator?: InputMaybe<OneOfOperator>;
-  values: Array<ContactType>;
-};
-
 export type Coordinates = {
   __typename?: 'Coordinates';
   latitude: Scalars['Float']['output'];
@@ -942,6 +940,20 @@ export type CreateEventsPolicyInput = {
   note?: InputMaybe<Array<LocalizedStringInput>>;
 };
 
+export type CreateFeeSetInput = {
+  businessModel: FeeBusinessModel;
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  fees: Array<FeeInput>;
+  name: Scalars['String']['input'];
+  propertyId: Scalars['ID']['input'];
+};
+
+export type CreateFeeSetPayload = {
+  __typename?: 'CreateFeeSetPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  feeSet: FeeSet;
+};
+
 export type CreateMaxOccupancyPolicyInput = {
   adultCount?: InputMaybe<Scalars['Int']['input']>;
   note?: InputMaybe<Array<LocalizedStringInput>>;
@@ -954,7 +966,7 @@ export type CreateNotificationCallbackConfigInput = {
   /** Callback url of callback configuration */
   callbackUrl: Scalars['Url']['input'];
   /** Email address for correspondence */
-  contactEmail?: InputMaybe<Scalars['EmailAddress']['input']>;
+  contactEmail: Scalars['EmailAddress']['input'];
   /** Request timeout in seconds of callback configuration */
   requestTimeoutSeconds?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -1001,7 +1013,6 @@ export type CreatePropertyInput = {
   address: CreateAddressInput;
   amenities?: InputMaybe<Array<AmenityInput>>;
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  contact?: InputMaybe<SavePropertyContactInput>;
   location: CreatePropertyLocationInput;
   name: Scalars['String']['input'];
   names?: InputMaybe<Array<LocalizedStringInput>>;
@@ -1029,7 +1040,7 @@ export type CreateRatePlanInput = {
   cancellationPolicyConfigId: Scalars['ID']['input'];
   clientMutationId?: InputMaybe<Scalars['ID']['input']>;
   distributionRules: Array<RatePlanDistributionRuleInput>;
-  feeSet?: InputMaybe<FeeSetInput>;
+  feeSetId?: InputMaybe<Scalars['ID']['input']>;
   name: Scalars['String']['input'];
   paymentScheduleApplicable?: InputMaybe<Scalars['Boolean']['input']>;
   pricingModel: PricingModel;
@@ -1038,6 +1049,7 @@ export type CreateRatePlanInput = {
   taxInclusive?: InputMaybe<Scalars['Boolean']['input']>;
   type: RatePlanType;
   unitId: Scalars['ID']['input'];
+  valueAdds: Array<Scalars['String']['input']>;
 };
 
 export type CreateRatePlanPayload = {
@@ -1144,10 +1156,15 @@ export type CustomStayPolicyMetadata = {
   key: Scalars['String']['output'];
 };
 
+export enum CutoffDayType {
+  NextDay = 'NEXT_DAY',
+  SameDay = 'SAME_DAY'
+}
+
 export type DateInput = {
   /** begin date */
   from: Scalars['LocalDate']['input'];
-  /**  end date */
+  /** end date */
   to: Scalars['LocalDate']['input'];
 };
 
@@ -1461,6 +1478,27 @@ export type ExactOrApproximateTimeRangeMetadata = {
   start: ExactOrApproximateTimeMetadata;
 };
 
+export type ExecuteVrboReservationUpdateInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** Free form text field, describing reservation update reason */
+  description: Scalars['String']['input'];
+  /** Payment due date. Nullable. Defaulted to the reservation checkout date if not supplied */
+  paymentDueDate?: InputMaybe<Scalars['LocalDate']['input']>;
+  /** The ID of the property where the change has been requested. */
+  propertyId: Scalars['ID']['input'];
+  /** Identifier associated with the reservation to be changed. */
+  reservationId: Scalars['ID']['input'];
+  /** Updated supplier amount of the reservation. */
+  updatePreviewToken: Scalars['String']['input'];
+};
+
+export type ExecuteVrboReservationUpdatePayload = {
+  __typename?: 'ExecuteVrboReservationUpdatePayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** Reference to reservation that was updated */
+  reservation?: Maybe<Reservation>;
+};
+
 /** Exemption to jurisdiction requirements. */
 export type Exemption = {
   __typename?: 'Exemption';
@@ -1487,13 +1525,107 @@ export type ExpediaSupplierAmount = SupplierAmount & {
   total: SupplierTotal;
 };
 
-export type FeeSet = {
-  __typename?: 'FeeSet';
-  id: Scalars['ID']['output'];
+export type ExtraBedType = {
+  __typename?: 'ExtraBedType';
+  quantity: Scalars['Int']['output'];
+  size: Scalars['String']['output'];
+  /** Only extra beds of type 'Crib' and 'Rollaway Bed' will have a surcharge defined. */
+  surcharge?: Maybe<Surcharge>;
+  type: Scalars['String']['output'];
 };
 
-export type FeeSetInput = {
-  id: Scalars['ID']['input'];
+export type Fee = {
+  __typename?: 'Fee';
+  ageCategory?: Maybe<FeeAgeCategory>;
+  charges: Array<FeeCharge>;
+  name: Scalars['String']['output'];
+  restrictions?: Maybe<FeeRestrictions>;
+  scope: Scalars['String']['output'];
+  taxable?: Maybe<Scalars['Boolean']['output']>;
+  type: Scalars['String']['output'];
+  variesByLengthOfStay?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export enum FeeAgeCategory {
+  Adult = 'ADULT',
+  ChildA = 'CHILD_A',
+  ChildB = 'CHILD_B',
+  ChildC = 'CHILD_C',
+  ChildD = 'CHILD_D',
+  Infant = 'INFANT'
+}
+
+export enum FeeBusinessModel {
+  Agency = 'AGENCY',
+  Merchant = 'MERCHANT'
+}
+
+export type FeeCharge = {
+  __typename?: 'FeeCharge';
+  duration: FeeChargeDuration;
+  flatAmount?: Maybe<Money>;
+  percentage?: Maybe<Scalars['Decimal']['output']>;
+  type: FeeChargeType;
+};
+
+export enum FeeChargeDuration {
+  Night = 'NIGHT',
+  Stay = 'STAY'
+}
+
+export type FeeChargeInput = {
+  duration: FeeChargeDuration;
+  flatAmount?: InputMaybe<MoneyInput>;
+  percentage?: InputMaybe<Scalars['Decimal']['input']>;
+  type: FeeChargeType;
+};
+
+export enum FeeChargeType {
+  FlatAmount = 'FLAT_AMOUNT',
+  Percentage = 'PERCENTAGE'
+}
+
+export type FeeDateRange = {
+  __typename?: 'FeeDateRange';
+  from: Scalars['Date']['output'];
+  to?: Maybe<Scalars['Date']['output']>;
+};
+
+export type FeeDateRangeInput = {
+  from: Scalars['Date']['input'];
+  to?: InputMaybe<Scalars['Date']['input']>;
+};
+
+export type FeeInput = {
+  ageCategory?: InputMaybe<FeeAgeCategory>;
+  charges: Array<FeeChargeInput>;
+  name: Scalars['String']['input'];
+  restrictions?: InputMaybe<FeeRestrictionsInput>;
+  scope: Scalars['String']['input'];
+  taxable?: InputMaybe<Scalars['Boolean']['input']>;
+  type: Scalars['String']['input'];
+  variesByLengthOfStay?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type FeeRestrictions = {
+  __typename?: 'FeeRestrictions';
+  dateRange?: Maybe<FeeDateRange>;
+  extraGuestRange?: Maybe<IntRange>;
+  rangeOfNight?: Maybe<IntRange>;
+};
+
+export type FeeRestrictionsInput = {
+  dateRange?: InputMaybe<FeeDateRangeInput>;
+  extraGuestRange?: InputMaybe<IntRangeInput>;
+  rangeOfNight?: InputMaybe<IntRangeInput>;
+};
+
+export type FeeSet = {
+  __typename?: 'FeeSet';
+  businessModel: FeeBusinessModel;
+  fees: Array<Fee>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type FiltersInput = {
@@ -1510,6 +1642,27 @@ export type FiltersInput = {
   status?: InputMaybe<PromotionStatus>;
   /** The Travel date window being queried for in Date format YYYY-MM-DD */
   travelDate?: InputMaybe<TravelDateInput>;
+};
+
+export type GeneratePreviewVrboReservationUpdateInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** The updated adult count. Optional if occupancy is not being changed. */
+  guests?: InputMaybe<PreviewVrboReservationUpdateGuestsInput>;
+  /** The ID of the property where the change has been requested. */
+  propertyId: Scalars['ID']['input'];
+  /** Identifier associated with the reservation to be changed. */
+  reservationId: Scalars['ID']['input'];
+  /** The updated stay dates. Optional if the stay dates are not being changed. */
+  stayDates?: InputMaybe<PreviewVrboReservationUpdateStayDatesInput>;
+};
+
+export type GeneratePreviewVrboReservationUpdatePayload = {
+  __typename?: 'GeneratePreviewVrboReservationUpdatePayload';
+  amounts: PreviewVrboReservationUpdateAmounts;
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  previewTokenExpirationDateTimeUtc: Scalars['DateTime']['output'];
+  /** The token to be used to execute the update */
+  updatePreviewToken: Scalars['String']['output'];
 };
 
 export type Guest = {
@@ -1548,9 +1701,9 @@ export type GuestContactPhoneNumber = {
 
 export type GuestRating = {
   __typename?: 'GuestRating';
-  /**  will consider Guest for future reservations  */
+  /** will consider Guest for future reservations */
   recommendGuest?: Maybe<Scalars['Boolean']['output']>;
-  /**  categorized ratings  */
+  /** categorized ratings */
   starRatings: Array<Maybe<Rating>>;
 };
 
@@ -1567,11 +1720,11 @@ export type IdNodeInput = {
 
 /** describes the source of a given property ID */
 export enum IdSource {
-  /** the source of the ID is the Expedia platform */
+  /** The source of the ID is the Expedia Group platform. */
   Expedia = 'EXPEDIA',
-  /** the source of the ID is the Supplier's platform */
+  /** The source of the ID is the supplier's platform. */
   Supplier = 'SUPPLIER',
-  /** the source of the ID is VRBOs Legacy system */
+  /** The source of the ID is VRBO's system. */
   Vrbo = 'VRBO'
 }
 
@@ -1612,9 +1765,7 @@ export type ImagesResponse = MediaResponse & {
 };
 
 export type InputLocalizedString = {
-  /**  locale of the text  */
   locale: Scalars['String']['input'];
-  /**  value of the text  */
   value: Scalars['String']['input'];
 };
 
@@ -1669,6 +1820,14 @@ export type InvalidScenario = {
   reason: Scalars['String']['output'];
   /** Scenario name string */
   scenario: Scalars['String']['output'];
+};
+
+export type InventoryConfig = {
+  __typename?: 'InventoryConfig';
+  /** Specifies the pricing model of the property */
+  pricingModel: PropertyPricingModel;
+  /** Rate acquisition config for the property */
+  rateAcquisition: RateAcquisition;
 };
 
 /** Inventory Type */
@@ -1741,9 +1900,7 @@ export type LivingRoomsMetadata = {
 
 export type LocalizedString = {
   __typename?: 'LocalizedString';
-  /**  value of the text  */
   locale: Scalars['Locale']['output'];
-  /**  locale of the text  */
   value: Scalars['String']['output'];
 };
 
@@ -2103,6 +2260,7 @@ export type Mutation = {
   createCancellationPolicyConfig?: Maybe<CreateCancellationPolicyConfigPayload>;
   /** Create day of week discount promotion */
   createDayOfWeekDiscountPromotion: Promotion;
+  createFeeSet?: Maybe<CreateFeeSetPayload>;
   /** Create multi night discount promotion. */
   createMultiNightDiscountPromotion: Promotion;
   /** Create callback configuration for notification profile. */
@@ -2119,23 +2277,29 @@ export type Mutation = {
   deleteUnitSpace?: Maybe<DeleteUnitSpacePayload>;
   disableProperty?: Maybe<DisablePropertyPayload>;
   enableProperty?: Maybe<EnablePropertyPayload>;
+  /** Mutation for suppliers to execute a VRBO reservation update */
+  executeVrboReservationUpdate: ExecuteVrboReservationUpdatePayload;
+  /** Mutation for suppliers to generate a preview for a VRBO reservation update */
+  generatePreviewVrboReservationUpdate: GeneratePreviewVrboReservationUpdatePayload;
   /** Add new listing discount */
   joinNewListingDiscount?: Maybe<Scalars['Boolean']['output']>;
-  /** Partner/Owner submits a traveler/guest rating */
   rateGuest?: Maybe<GuestRating>;
   /** Refresh secret for callback configuration based on callbackConfigId. */
   refreshNotificationCallbackConfigSecret?: Maybe<RefreshNotificationCallbackConfigSecretPayload>;
   /** Update reservation with good will refund */
   refundReservation: RefundReservationPayload;
+  /** Refund Vrbo reservation */
+  refundVrboReservation: RefundVrboReservationPayload;
   replaceCancellationPolicyConfig?: Maybe<ReplaceCancellationPolicyConfigPayload>;
-  savePropertyContact?: Maybe<Contact>;
+  replaceFeeSet?: Maybe<ReplaceFeeSetPayload>;
   /**  Send a new message to a message thread */
   sendMessage?: Maybe<SendMessagePayload>;
   /** Send test notification using a given eventType and Payload */
   sendTestNotification?: Maybe<SendTestNotificationPayload>;
   /** Set spam status for a message thread */
   setMessageThreadSpamStatus?: Maybe<SetMessageThreadSpamStatusPayload>;
-  /** Partner/Owner submits a response to a traveler review */
+  /** Mutation for setting the tax record for a property */
+  setPropertyTaxRecord?: Maybe<SetPropertyTaxRecordPayload>;
   setReviewResponse: UpdatedReviewResponse;
   /** Subscribe to notification event type for a given notification subscription profile. */
   subscribeNotificationEventType?: Maybe<SubscribeNotificationEventTypePayload>;
@@ -2152,6 +2316,7 @@ export type Mutation = {
   updateNotificationEventTypeSubscription?: Maybe<UpdateNotificationEventTypeSubscriptionPayload>;
   updateProperty?: Maybe<UpdatePropertyPayload>;
   updatePropertyListingBundleAdoption: ListingBundleAdoptionPayload;
+  updateRatePlan?: Maybe<UpdateRatePlanPayload>;
   /** Update single discount promotion. */
   updateSingleDiscountPromotion: Promotion;
   updateUnit?: Maybe<UpdatePropertyUnitPayload>;
@@ -2220,6 +2385,11 @@ export type MutationCreateDayOfWeekDiscountPromotionArgs = {
 };
 
 
+export type MutationCreateFeeSetArgs = {
+  input: CreateFeeSetInput;
+};
+
+
 export type MutationCreateMultiNightDiscountPromotionArgs = {
   promotion: MultiNightDiscountPromotionCreateInput;
   propertyId: Scalars['String']['input'];
@@ -2284,6 +2454,16 @@ export type MutationEnablePropertyArgs = {
 };
 
 
+export type MutationExecuteVrboReservationUpdateArgs = {
+  input: ExecuteVrboReservationUpdateInput;
+};
+
+
+export type MutationGeneratePreviewVrboReservationUpdateArgs = {
+  input: GeneratePreviewVrboReservationUpdateInput;
+};
+
+
 export type MutationJoinNewListingDiscountArgs = {
   id: Scalars['String']['input'];
   idSource: IdSource;
@@ -2307,14 +2487,18 @@ export type MutationRefundReservationArgs = {
 };
 
 
+export type MutationRefundVrboReservationArgs = {
+  input: RefundVrboReservationInput;
+};
+
+
 export type MutationReplaceCancellationPolicyConfigArgs = {
   input: ReplaceCancellationPolicyConfigInput;
 };
 
 
-export type MutationSavePropertyContactArgs = {
-  contact: SavePropertyContactInput;
-  propertyId: Scalars['ID']['input'];
+export type MutationReplaceFeeSetArgs = {
+  input: ReplaceFeeSetInput;
 };
 
 
@@ -2330,6 +2514,11 @@ export type MutationSendTestNotificationArgs = {
 
 export type MutationSetMessageThreadSpamStatusArgs = {
   input: SetMessageThreadSpamStatusInput;
+};
+
+
+export type MutationSetPropertyTaxRecordArgs = {
+  input: SetPropertyTaxRecordInput;
 };
 
 
@@ -2387,6 +2576,11 @@ export type MutationUpdatePropertyArgs = {
 
 export type MutationUpdatePropertyListingBundleAdoptionArgs = {
   input: PropertyListingBundleAdoptionInput;
+};
+
+
+export type MutationUpdateRatePlanArgs = {
+  input: UpdateRatePlanInput;
 };
 
 
@@ -2537,13 +2731,13 @@ export type OneOfStringFilterInput = {
 
 export type OwnerResponse = {
   __typename?: 'OwnerResponse';
-  /**  review response text  */
+  /** review response text */
   body: LocalizedString;
-  /**  review create time in ISO format  */
+  /** review create time in ISO format */
   createdDateTime: Scalars['String']['output'];
-  /**  review updated time in ISO format  */
+  /** review updated time in ISO format */
   lastUpdatedDateTime: Scalars['String']['output'];
-  /**  status of the management response  */
+  /** status of the management response */
   status: Scalars['String']['output'];
 };
 
@@ -2643,27 +2837,6 @@ export type PetsPolicyMetadata = {
   allowedPets: AllowedPetsMetadata;
 };
 
-export type PhoneNumber = {
-  __typename?: 'PhoneNumber';
-  areaCode?: Maybe<Scalars['String']['output']>;
-  countryCode?: Maybe<Scalars['String']['output']>;
-  extension?: Maybe<Scalars['String']['output']>;
-  number: Scalars['String']['output'];
-  phoneNumberType: PhoneNumberType;
-};
-
-export type PhoneNumberInput = {
-  areaCode?: InputMaybe<Scalars['String']['input']>;
-  countryCode?: InputMaybe<Scalars['String']['input']>;
-  extension?: InputMaybe<Scalars['String']['input']>;
-  number: Scalars['String']['input'];
-  phoneNumberType: PhoneNumberType;
-};
-
-export enum PhoneNumberType {
-  Business = 'BUSINESS'
-}
-
 export type Policies = {
   __typename?: 'Policies';
   bookingPolicy?: Maybe<BookingPolicy>;
@@ -2675,6 +2848,45 @@ export type PolicyMetadata = {
   __typename?: 'PolicyMetadata';
   bookingPolicies: BookingPolicyMetadata;
   stayPolicies: StayPolicyMetadata;
+};
+
+export type PreviewVrboReservationUpdateAmounts = {
+  __typename?: 'PreviewVrboReservationUpdateAmounts';
+  difference: PreviewVrboReservationUpdateAmountsDifference;
+  totals: PreviewVrboReservationUpdateAmountsTotals;
+};
+
+export type PreviewVrboReservationUpdateAmountsDifference = {
+  __typename?: 'PreviewVrboReservationUpdateAmountsDifference';
+  /** The amount of the cleaning fee difference */
+  fees: Money;
+  /** The amount of the rental price difference */
+  rent: Money;
+  /** The amount of the tax difference */
+  taxes: Money;
+  total: Money;
+};
+
+export type PreviewVrboReservationUpdateAmountsTotals = {
+  __typename?: 'PreviewVrboReservationUpdateAmountsTotals';
+  currentTotalAmount: Money;
+  postUpdateTotalAmount: Money;
+};
+
+export type PreviewVrboReservationUpdateGuestsInput = {
+  /** The updated number of adults in the reservation */
+  adultCount: Scalars['Int']['input'];
+  /** The updated number of children in the reservation */
+  childCount: Scalars['Int']['input'];
+  /** The updated number of pets in the reservation */
+  petCount: Scalars['Int']['input'];
+};
+
+export type PreviewVrboReservationUpdateStayDatesInput = {
+  /** the reservation's arrival date (format: YYYY-MM-DD) */
+  checkInDate: Scalars['LocalDate']['input'];
+  /** the reservation's departure date (format: YYYY-MM-DD) */
+  checkOutDate: Scalars['LocalDate']['input'];
 };
 
 export enum PricingModel {
@@ -2767,22 +2979,25 @@ export type Property = {
   /** Whether a property + associated units or unit is live in the EG system. */
   activeStatus?: Maybe<ActiveStatus>;
   address: Address;
-  /** aggregated review scores for property */
   aggregatedReviews?: Maybe<AggregatedReviewsResponse>;
   amenities?: Maybe<Array<Amenity>>;
-  contacts?: Maybe<Array<Contact>>;
   /** @deprecated Coordinates are now nested under `location`. Use the sibling `location.coordinates` field instead. */
   coordinates: Coordinates;
+  /** Specifies the ISO-4217 currency code of the rates being entered by the property */
+  currency: Scalars['Currency']['output'];
   /** The default locale is used as a fallback when no other locale is specified.  IETF BCP 47 language tag, defaulting to en-US. */
   defaultLocale: Scalars['Locale']['output'];
   /** Jurisdiction regulatory requirements/parameters that apply to this property's rental conditions. */
   district?: Maybe<District>;
+  feeSets?: Maybe<PropertyFeeSetsResponse>;
   /** @deprecated deprecated, replace with coordinates */
   geoLocation: Coordinates;
-  /** Known IDs for the property on the source system */
+  /** the ID of the property whose reservations you want to retrieve */
   id: Scalars['ID']['output'];
   /** Known IDs for the property. */
   ids: Array<IdNode>;
+  /** Configuration related to the property's inventory */
+  inventoryConfig: InventoryConfig;
   /** Listings of the property on the requested domains, supported domains: [expedia.com, vrbo.com] */
   listings?: Maybe<Array<Maybe<PropertyListing>>>;
   location: PropertyLocation;
@@ -2800,9 +3015,12 @@ export type Property = {
   referenceName?: Maybe<Scalars['String']['output']>;
   /** retrieve reservation data by property ID */
   reservations: ReservationsConnection;
-  /** paginated traveler review data */
   reviews: ReviewResponse;
+  /** Tax records for the property. */
+  taxRecords: Array<TaxRecord>;
   text?: Maybe<Array<Text>>;
+  /** The description of the time zone that the hotel is located in */
+  timeZone: Scalars['String']['output'];
   type: PropertyType;
   /** A collection of Unit configurations for the Property */
   units?: Maybe<Array<Maybe<Unit>>>;
@@ -2822,14 +3040,14 @@ export type PropertyAmenitiesArgs = {
 
 
 /** Property content by EG Property ID, as defined in product-listing subgraph */
-export type PropertyContactsArgs = {
-  filters?: InputMaybe<PropertyContactsFiltersInput>;
+export type PropertyDistrictArgs = {
+  locale?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 /** Property content by EG Property ID, as defined in product-listing subgraph */
-export type PropertyDistrictArgs = {
-  locale?: InputMaybe<Scalars['String']['input']>;
+export type PropertyFeeSetsArgs = {
+  filters: PropertyFeeSetsFiltersInput;
 };
 
 
@@ -2887,8 +3105,14 @@ export type PropertyTextArgs = {
   filters?: InputMaybe<TextFiltersInput>;
 };
 
-export type PropertyContactsFiltersInput = {
-  contactType?: InputMaybe<ContactTypeFilterInput>;
+export type PropertyFeeSetsFiltersInput = {
+  feeSetIds: Array<Scalars['ID']['input']>;
+};
+
+export type PropertyFeeSetsResponse = {
+  __typename?: 'PropertyFeeSetsResponse';
+  elements: Array<FeeSet>;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type PropertyListing = {
@@ -2970,6 +3194,11 @@ export type PropertyMetadata = {
   units: UnitsMetadata;
 };
 
+export enum PropertyPricingModel {
+  OccupancyBased = 'OCCUPANCY_BASED',
+  PerDay = 'PER_DAY'
+}
+
 /** Government registration information for a given property and details on the property units. */
 export type PropertyRegistration = {
   __typename?: 'PropertyRegistration';
@@ -3028,6 +3257,7 @@ export type Query = {
   ratePlan?: Maybe<RatePlan>;
   /** Retrieves failed notifications */
   undeliveredNotifications?: Maybe<UndeliveredNotificationsResponse>;
+  unit?: Maybe<Unit>;
   /** Retrieve the current status of ID Mapping progress for a given Advertiser. */
   vrboIdMappingProgress?: Maybe<VrboIdMappingProgress>;
 };
@@ -3090,6 +3320,11 @@ export type QueryUndeliveredNotificationsArgs = {
 };
 
 
+export type QueryUnitArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryVrboIdMappingProgressArgs = {
   advertiserId: Scalars['ID']['input'];
 };
@@ -3099,14 +3334,32 @@ export enum RangeOperator {
   Inclusive = 'INCLUSIVE'
 }
 
+export type RateAcquisition = {
+  __typename?: 'RateAcquisition';
+  /** Specifies if the rate includes fees and/or taxes. Only applicable for the SELL_LAR rate acquisition type */
+  pricingComponents: Array<RateAcquisitionPricingComponent>;
+  /** Specifies how an entered rate is interpreted */
+  type: RateAcquisitionType;
+};
+
+export enum RateAcquisitionPricingComponent {
+  Fees = 'FEES',
+  Taxes = 'TAXES'
+}
+
+export enum RateAcquisitionType {
+  Net = 'NET',
+  SellLar = 'SELL_LAR'
+}
+
 export type RateGuestInput = {
-  /**  will consider Guest for future reservations  */
+  /** will consider Guest for future reservations */
   recommendGuest: Scalars['Boolean']['input'];
   /** reservation ID. */
   reservationId: Scalars['ID']['input'];
   /** Source of the reservation ID. */
   reservationIdSource: IdSource;
-  /**  categorized ratings  */
+  /** categorized ratings */
   starRatings: Array<RatingInput>;
 };
 
@@ -3128,6 +3381,7 @@ export type RatePlan = {
   taxInclusive?: Maybe<Scalars['Boolean']['output']>;
   type: RatePlanType;
   unitId: Scalars['ID']['output'];
+  valueAdds: Array<Scalars['String']['output']>;
 };
 
 export type RatePlanDistributionRule = {
@@ -3163,6 +3417,21 @@ export enum RatePlanType {
   Standalone = 'STANDALONE'
 }
 
+export type RateThresholdSettings = {
+  __typename?: 'RateThresholdSettings';
+  /** Defines maximum acceptable rate, expressed as a decimal number. */
+  maxAmount: Scalars['Decimal']['output'];
+  /** Defines minimum acceptable rate, expressed as a decimal number. */
+  minAmount: Scalars['Decimal']['output'];
+  /** Defines how the minimum and maximum amounts were calculated. */
+  source: RateThresholdsSource;
+};
+
+export enum RateThresholdsSource {
+  ManualOverride = 'MANUAL_OVERRIDE',
+  RecentBookings = 'RECENT_BOOKINGS'
+}
+
 /** Time frame to which the rate is applied. */
 export enum RateTimeUnit {
   PerDay = 'PER_DAY',
@@ -3179,16 +3448,16 @@ export enum RateType {
 
 export type Rating = {
   __typename?: 'Rating';
-  /**  rating category  */
+  /** rating category */
   category: Scalars['String']['output'];
-  /**  value of the rating  */
+  /** value of the rating */
   value: Scalars['String']['output'];
 };
 
 export type RatingInput = {
-  /**  rating category  */
+  /** rating category */
   category: Scalars['String']['input'];
-  /**  value of the rating  */
+  /** value of the rating */
   value: Scalars['String']['input'];
 };
 
@@ -3237,6 +3506,34 @@ export type RefundReservationPayload = {
   /** Identifier associated with the reservation changed */
   reservation?: Maybe<Reservation>;
 };
+
+export type RefundVrboReservationInput = {
+  /** Partner supplied Unique mutation identifier */
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** Text containing the reason for refunding the reservation */
+  freeTextReason: Scalars['String']['input'];
+  /** The ID of the property where the change has been requested. */
+  propertyId: Scalars['ID']['input'];
+  /** Amount & currencyCode */
+  refund: RefundVrboReservationRefundInput;
+  /** Identifier associated with the reservation to be refunded. */
+  reservationId: Scalars['ID']['input'];
+};
+
+export type RefundVrboReservationPayload = {
+  __typename?: 'RefundVrboReservationPayload';
+  /** Identifier associated with the reservation changed */
+  reservation?: Maybe<Reservation>;
+};
+
+export type RefundVrboReservationRefundInput = {
+  flatAmount: MoneyInput;
+  type: RefundVrboReservationRefundType;
+};
+
+export enum RefundVrboReservationRefundType {
+  FlatAmount = 'FLAT_AMOUNT'
+}
 
 /** Government registration information for a given property. */
 export type Registration = {
@@ -3430,6 +3727,43 @@ export type RegistrationRecordInput = {
   registrationNumberType?: InputMaybe<RegistrationNumberType>;
 };
 
+/** Key/value pair representing an individual attribute of a regulatory record */
+export type RegulatoryAttribute = {
+  __typename?: 'RegulatoryAttribute';
+  /** Key identifying an individual attribute of a regulatory record */
+  name: Scalars['String']['output'];
+  validationResult: RegulatoryAttributeValidationResult;
+  /** Value for the given key in the attribute */
+  value: RegulatoryAttributeValue;
+};
+
+/** Key/value pair representing an individual attribute of a tax record */
+export type RegulatoryAttributeInput = {
+  /** Key identifying an individual attribute of a tax record */
+  name: Scalars['String']['input'];
+  /** Value for the given key in the attribute */
+  value?: InputMaybe<RegulatoryAttributeValueInput>;
+};
+
+export type RegulatoryAttributeValidationResult = {
+  __typename?: 'RegulatoryAttributeValidationResult';
+  messages: Array<Scalars['String']['output']>;
+  valid: Scalars['Boolean']['output'];
+};
+
+export type RegulatoryAttributeValue = {
+  __typename?: 'RegulatoryAttributeValue';
+  /** Type for the regulatory attribute */
+  type: Scalars['String']['output'];
+  /** Value for the given key in the attribute */
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type RegulatoryAttributeValueInput = {
+  /** Value for the given key in the attribute */
+  value?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** Category values for regulatory categories. */
 export enum RegulatoryCategory {
   ApartmentHotel = 'APARTMENT_HOTEL',
@@ -3458,6 +3792,14 @@ export enum RegulatoryCategory {
   VacationRental = 'VACATION_RENTAL',
   VacationRentalOther = 'VACATION_RENTAL_OTHER'
 }
+
+export type RegulatoryPurposeValidationResult = {
+  __typename?: 'RegulatoryPurposeValidationResult';
+  /** Overall compliant status of the record for a given purpose */
+  complianceStatusCode: Scalars['String']['output'];
+  /** Validation messages concerning the compliance status */
+  messages: Array<Scalars['String']['output']>;
+};
 
 /** Values for regulatory status. */
 export enum RegulatoryStatus {
@@ -3494,6 +3836,21 @@ export type ReplaceCancellationPolicyConfigPayload = {
   __typename?: 'ReplaceCancellationPolicyConfigPayload';
   cancellationPolicyConfig?: Maybe<CancellationPolicyConfig>;
   clientMutationId?: Maybe<Scalars['String']['output']>;
+};
+
+export type ReplaceFeeSetInput = {
+  businessModel: FeeBusinessModel;
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  fees: Array<FeeInput>;
+  id: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
+  propertyId: Scalars['ID']['input'];
+};
+
+export type ReplaceFeeSetPayload = {
+  __typename?: 'ReplaceFeeSetPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  feeSet: FeeSet;
 };
 
 /** Reservation details. */
@@ -3755,8 +4112,8 @@ export type ReservationGuests = {
   adultCount: Scalars['Int']['output'];
   /** Count for all children associated with the reservation. */
   childCount: Scalars['Int']['output'];
-  /** Details of pets associated with the reservation. */
-  pets?: Maybe<ReservationPets>;
+  /** Count for all pets associated with the reservation. */
+  petCount: Scalars['Int']['output'];
   /** Details of the Primary Guest */
   primaryGuest: ReservationGuest;
 };
@@ -3823,13 +4180,6 @@ export type ReservationPerStayAmount = {
   percent?: Maybe<Scalars['Float']['output']>;
   /** Amount type (BASE, DISCOUNT, TAX, GUESS_PAYMENT, PAYOUT, ...) */
   type: Scalars['String']['output'];
-};
-
-/** Details of the pets associated with the reservation */
-export type ReservationPets = {
-  __typename?: 'ReservationPets';
-  /** Boolean indicating if pets are included in the reservation */
-  travelingWithPets: Scalars['Boolean']['output'];
 };
 
 /** Details of the Policies associated with the reservation */
@@ -4044,38 +4394,38 @@ export enum ResultFilter {
 
 export type Review = {
   __typename?: 'Review';
-  /**  review text  */
+  /** review text */
   body: LocalizedString;
   /**
    * brand to which review belongs
-   * @deprecated Use the new `brandNameV2` field instead. It contains the value from `ReviewBrand` enum.
+   * @deprecated `brandName` field is deprecated, replace with `brandNameV2`, which contains the value from `ReviewBrand` enum
    */
   brandName?: Maybe<Scalars['String']['output']>;
-  /**  brandName to which review belong  */
+  /** brandName to which review belongs */
   brandNameV2?: Maybe<ReviewBrand>;
-  /**  review create time in ISO format  */
+  /** review create time in ISO format */
   createdDateTime: Scalars['String']['output'];
-  /**  The review id form the domain reviews api  */
+  /** The review id form the domain reviews api */
   id: Scalars['ID']['output'];
-  /**  flag to determine if partner would be able to respond to this review  */
+  /** flag to determine if partner would be able to respond to this review */
   isEligibleForResponse?: Maybe<Scalars['Boolean']['output']>;
-  /**  review updated time in ISO format  */
+  /** review updated time in ISO format */
   lastUpdatedDateTime: Scalars['String']['output'];
-  /**  review media content  */
+  /** review media content */
   media?: Maybe<ReviewMedia>;
-  /**  the property Ids  */
+  /** the property Ids */
   propertyId?: Maybe<Array<Maybe<IdNode>>>;
-  /**  Reservation Details. The reservation details are from a cached source. This is not live reservation */
+  /** Reservation Details. The reservation details are from a cached source. This is not live reservation */
   reservation?: Maybe<ReviewReservation>;
-  /**  The owner submitted review response  */
+  /** The owner submitted review response */
   response?: Maybe<OwnerResponse>;
-  /**  source of the review. PLATFORM or IMPORTED  */
+  /** source of the review. PLATFORM or IMPORTED */
   source?: Maybe<Scalars['String']['output']>;
-  /**  categorized ratings  */
+  /** categorized ratings */
   starRatings: Array<Maybe<Rating>>;
-  /**  status of the review  */
+  /** status of the review */
   status: Scalars['String']['output'];
-  /**  title of the review  */
+  /** title of the review */
   title?: Maybe<LocalizedString>;
 };
 
@@ -4129,15 +4479,15 @@ export type ReviewFilter = {
 
 export type ReviewGuest = {
   __typename?: 'ReviewGuest';
-  /**  first name or nickname of the traveler  */
+  /** first name or nickname of the traveler */
   firstName: Scalars['String']['output'];
-  /**  last name of the traveler  */
+  /** last name of the traveler */
   lastName: Scalars['String']['output'];
 };
 
 export type ReviewMedia = {
   __typename?: 'ReviewMedia';
-  /**  caption of image  */
+  /** caption of image */
   caption?: Maybe<LocalizedString>;
   highResolutionUrl?: Maybe<Scalars['String']['output']>;
   thumbnailUrl?: Maybe<Scalars['String']['output']>;
@@ -4145,14 +4495,14 @@ export type ReviewMedia = {
 
 export type ReviewReservation = {
   __typename?: 'ReviewReservation';
-  /**  checkIn date for the reservation  */
+  /** checkIn date for the reservation */
   checkInDate?: Maybe<Scalars['LocalDate']['output']>;
-  /**  checkout date for the reservation  */
+  /** checkout date for the reservation */
   checkOutDate?: Maybe<Scalars['LocalDate']['output']>;
-  /**  guest information  */
+  /** guest information */
   primaryGuest?: Maybe<ReviewGuest>;
   reservationIds: Array<IdNode>;
-  /**  status of the reservation  */
+  /** status of the reservation */
   status?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4168,10 +4518,10 @@ export type ReviewReservationIdNodeInput = {
 
 export type ReviewResponse = {
   __typename?: 'ReviewResponse';
-  /**  Represents the next page cursor in the list, Empty if no more pages available */
+  /** Represents the next page cursor in the list, Empty if no more pages available */
   cursor?: Maybe<Scalars['String']['output']>;
   reviews: Array<Maybe<Review>>;
-  /**  Total number of reviews returned that meet the search criteria  */
+  /** Total number of reviews returned that meet the search criteria */
   totalCount: Scalars['Int']['output'];
 };
 
@@ -4188,13 +4538,6 @@ export type ReviewsOrderBy = {
   reservationCheckInDate?: InputMaybe<SortOrder>;
   /** Sort based on reservation checkOut date */
   reservationCheckOutDate?: InputMaybe<SortOrder>;
-};
-
-export type SavePropertyContactInput = {
-  emailAddresses?: InputMaybe<Array<Scalars['String']['input']>>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
-  type: ContactType;
 };
 
 export type SendMessageInput = {
@@ -4245,6 +4588,24 @@ export type SetMessageThreadSpamStatusPayload = {
   clientMutationId?: Maybe<Scalars['String']['output']>;
   /**  ID of the message thread marked as spam */
   id: Scalars['ID']['output'];
+};
+
+/** Unit level tax records */
+export type SetPropertyTaxRecordInput = {
+  /** List of constituent values for the tax record as key/value pairs */
+  attributes?: InputMaybe<Array<RegulatoryAttributeInput>>;
+  /** Tax Category for the Property. Currently supported values: FREEMIUM */
+  categoryCode: Scalars['String']['input'];
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  /** Expedia Property ID for the Property the tax record applies to */
+  propertyId: Scalars['ID']['input'];
+};
+
+export type SetPropertyTaxRecordPayload = {
+  __typename?: 'SetPropertyTaxRecordPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** Tax records for the property after completion of the mutation */
+  taxRecords: Array<TaxRecord>;
 };
 
 /** Single discounts are ones that have a flat discount percentage (for eg: 15% off). */
@@ -4529,6 +4890,23 @@ export type SupplierTotal = {
   compensation: SupplierAmountCompensation;
 };
 
+export type Surcharge = {
+  __typename?: 'Surcharge';
+  /** Defines the amount of the surcharge. Must be defined if type is not 'Free'. */
+  amount?: Maybe<Scalars['Decimal']['output']>;
+  /** Defines the surcharge type. */
+  type: Scalars['String']['output'];
+};
+
+export type TaxRecord = {
+  __typename?: 'TaxRecord';
+  /** List of attributes for the tax record */
+  attributes: Array<RegulatoryAttribute>;
+  /** Category for the tax record. */
+  categoryCode: Scalars['String']['output'];
+  validationResult: RegulatoryPurposeValidationResult;
+};
+
 export type TestNotificationError = {
   __typename?: 'TestNotificationError';
   /** Code that reflects the specific error encountered during the test */
@@ -4615,17 +4993,24 @@ export type Unit = {
   __typename?: 'Unit';
   /** Whether associated units are live in the EG system. */
   activeStatus?: Maybe<ActiveStatus>;
+  ageCategories: Array<UnitAgeCategory>;
   amenities?: Maybe<Array<Amenity>>;
   area?: Maybe<PropertyUnitArea>;
+  bedGroups: Array<BedGroup>;
   /** The cardinality of this Unit configuration on the Property */
   count?: Maybe<Scalars['Int']['output']>;
+  extraBeds: Array<ExtraBedType>;
   id: Scalars['ID']['output'];
   ids?: Maybe<Array<Maybe<IdNode>>>;
+  maxOccupancy: UnitOccupancy;
+  nameConfig: UnitNameConfig;
   /** new listing discount */
   newListingDiscount?: Maybe<Array<Maybe<PromotionEnrollment>>>;
   propertyId: Scalars['ID']['output'];
+  rateThresholds: RateThresholdSettings;
   /** Unit regulatory registration information. */
   registration?: Maybe<Registration>;
+  smokingPolicy: UnitSmokingPolicy;
   /** Represents container to group all available unit spaces. */
   spaces?: Maybe<UnitSpaces>;
 };
@@ -4640,6 +5025,62 @@ export type UnitAmenitiesArgs = {
 /** Defines a Unit configuration. */
 export type UnitRegistrationArgs = {
   locale?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UnitAgeCategory = {
+  __typename?: 'UnitAgeCategory';
+  ageCategory: Scalars['String']['output'];
+  minAge: Scalars['Int']['output'];
+};
+
+export type UnitNameAccessibility = {
+  __typename?: 'UnitNameAccessibility';
+  /** Attribute that adds the type of accessibility to be included in the name as specified, and will override includeAccessibility if present. */
+  accessibilityTypeOverride: Scalars['String']['output'];
+  /** Attribute that determines whether or not to include Accessible in the unit name. */
+  includeAccessibility: Scalars['Boolean']['output'];
+};
+
+export type UnitNameAttributes = {
+  __typename?: 'UnitNameAttributes';
+  /** Attribute that determines if unit has accessibility. */
+  accessibility: UnitNameAccessibility;
+  /** Attribute that describes the details of the bedroom, which is used to compose the name. */
+  bedroomDetails: Scalars['String']['output'];
+  /** Attribute to add a custom label to the unit name, always used in the name if provided. */
+  customLabel: Scalars['String']['output'];
+  /** Attribute used to highlight a feature of the unit, which is used to compose the name. */
+  featuredAmenity: Scalars['String']['output'];
+  /** Attribute that determines whether or not to include bed type on the unit name. */
+  includeBedType: Scalars['Boolean']['output'];
+  /** Attribute that determines whether or not to include unit smoking preferences on the unit name. */
+  includeSmokingPolicy: Scalars['Boolean']['output'];
+  /** Attribute used to highlight the location of the unit, which is used to compose the name. */
+  location: Scalars['String']['output'];
+  /** Attribute that described the class of unit, which is used to compose the name, e.g Basic, Standard etc. */
+  unitClass: Scalars['String']['output'];
+  /** Attribute that determines the type of unit, which is used to compose the name, e.g Room, Apartment, Cabin etc. */
+  unitType: Scalars['String']['output'];
+  /** Attribute that gives additional information about the view of the unit, which is used to compose the name. */
+  view: Scalars['String']['output'];
+};
+
+export type UnitNameConfig = {
+  __typename?: 'UnitNameConfig';
+  /** Collection of attributes that can be used to build a unit name. */
+  attributes: UnitNameAttributes;
+  /** Contains either auto-generated attribute name or a predefined name, will return auto-generated name if attributes were provided. */
+  value: Scalars['String']['output'];
+};
+
+export type UnitOccupancy = {
+  __typename?: 'UnitOccupancy';
+  /** Maximum number of adults that can reside in the unit, will be at least 1 and less than or equal to the total. */
+  adults: Scalars['Int']['output'];
+  /** Maximum number of children that can reside in the unit, will be less than the total. */
+  children: Scalars['Int']['output'];
+  /** Total count of people that can reside in the unit, will be at least 1. */
+  total: Scalars['Int']['output'];
 };
 
 /** Registration information for each bookable unit of a multi-unit property. */
@@ -4674,6 +5115,12 @@ export type UnitRegistrationDetail = {
   /** Describes the warning status */
   warningStatus?: Maybe<WarningStatus>;
 };
+
+export enum UnitSmokingPolicy {
+  NonSmoking = 'NON_SMOKING',
+  Smoking = 'SMOKING',
+  SmokingAndNonSmoking = 'SMOKING_AND_NON_SMOKING'
+}
 
 /** Represents container to group all available unit spaces. */
 export type UnitSpaces = {
@@ -4853,6 +5300,35 @@ export type UpdatePropertyUnitPayload = {
   unit: Unit;
 };
 
+export type UpdateRatePlanInput = {
+  baseRateGuestCount?: InputMaybe<Scalars['Int']['input']>;
+  cancellationPolicyConfigId?: InputMaybe<Scalars['ID']['input']>;
+  clientMutationId?: InputMaybe<Scalars['ID']['input']>;
+  distributionRules?: InputMaybe<Array<RatePlanDistributionRuleInput>>;
+  feeSetId?: InputMaybe<Scalars['ID']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  paymentScheduleApplicable?: InputMaybe<Scalars['Boolean']['input']>;
+  propertyId: Scalars['ID']['input'];
+  restrictions?: InputMaybe<UpdateRatePlanRestrictionsInput>;
+  status?: InputMaybe<RatePlanStatus>;
+  taxInclusive?: InputMaybe<Scalars['Boolean']['input']>;
+  unitId: Scalars['ID']['input'];
+};
+
+export type UpdateRatePlanPayload = {
+  __typename?: 'UpdateRatePlanPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  ratePlan?: Maybe<RatePlan>;
+};
+
+export type UpdateRatePlanRestrictionsInput = {
+  advanceBookingDays?: InputMaybe<IntRangeInput>;
+  lengthOfStay?: InputMaybe<IntRangeInput>;
+  reservationDates?: InputMaybe<DateRangeInput>;
+  travelDates?: InputMaybe<DateRangeInput>;
+};
+
 export type UpdateSmokingLocationPolicyInput = {
   allowed?: InputMaybe<Scalars['Boolean']['input']>;
   allowedNote?: InputMaybe<Array<LocalizedStringInput>>;
@@ -4977,29 +5453,31 @@ export type UpdateVrboSupplierReservationIdsPayload = {
 
 export type UpdatedReviewResponse = {
   __typename?: 'UpdatedReviewResponse';
-  /**  review response text  */
   body: LocalizedString;
-  /**  review create time in ISO format  */
   createdDateTime: Scalars['String']['output'];
-  /**  status of the management response  */
   status: Scalars['String']['output'];
 };
 
-/** Possible actions for vrbo cancellation */
-export enum VrboCancellationPolicyAction {
-  Apply = 'APPLY',
-  FullWaiver = 'FULL_WAIVER',
-  OverrideWithPenalty = 'OVERRIDE_WITH_PENALTY'
-}
-
 /** Cancel Policy Override for vrbo cancellation */
 export type VrboCancellationPolicyOverride = {
-  percent?: InputMaybe<Scalars['Float']['input']>;
-  type: VrboCancellationPolicyOverrideType;
+  overrideType: VrboCancellationPolicyOverrideType;
+  penalty?: InputMaybe<VrboCancellationPolicyPenalty>;
 };
 
 /** Possible override types on the vrbo cancellation */
 export enum VrboCancellationPolicyOverrideType {
+  Penalty = 'PENALTY'
+}
+
+export type VrboCancellationPolicyPenalty = {
+  /** The percentage of the penalty for the cancellation */
+  percent?: InputMaybe<Scalars['Float']['input']>;
+  /** The penalty type for the cancellation */
+  type: VrboCancellationPolicyPenaltyType;
+};
+
+/** Possible penalty types on the vrbo cancellation penalty */
+export enum VrboCancellationPolicyPenaltyType {
   Percent = 'PERCENT'
 }
 
@@ -5193,147 +5671,3 @@ export type WeightInput = {
   amount: Scalars['Int']['input'];
   weightUnit: BaseWeightUnit;
 };
-
-export type NotificationCallbackConfigFragmentFragment = { __typename?: 'NotificationCallbackConfig', id: string, callbackUrl: any, secretExpirationDateTime: any, requestTimeoutSeconds: number };
-
-export type ReservationFragmentFragment = { __typename?: 'Reservation', id: string, checkInDate: any, checkOutDate: any, creationDateTime: string, status: ReservationStatus, subStatus?: string | null, isReconciled?: boolean | null, reconciliationType?: string | null, tidsCode?: number | null, messageThreadId?: string | null, supplierOperatingModel?: SupplierOperatingModel | null, inventoryType?: InventoryType | null, remittanceType?: RemittanceType | null, adultCount: number, childCount: number, childAges?: Array<number | null> | null, totalGuestCount: number, petCount?: number | null, specialRequest?: string | null, paymentInstructions: string, payment: { __typename?: 'Payment', instructions: string, status?: ReservationPaymentStatus | null, instrument?: { __typename?: 'PaymentInstrument', type: PaymentInstrumentType, token: { __typename?: 'PaymentToken', value?: string | null, expirationDateTime?: string | null } } | null, installments: Array<{ __typename?: 'Installment', dueDate: any, amount: { __typename?: 'Money', currencyCode: any, amount: any }, distributions: Array<{ __typename?: 'InstallmentDistribution', type: string, amount: { __typename?: 'Money', currencyCode: any, amount: any } }> }> }, primaryGuest: { __typename?: 'Guest', firstName: string, lastName: string, loyaltyTier?: string | null, emailAddress?: any | null, travelPurpose?: TravelPurpose | null, phoneNumbers?: Array<{ __typename?: 'GuestContactPhoneNumber', countryCode: string, areaCode: string, number: string }> | null, supplierLoyaltyPlanInfo?: { __typename?: 'SupplierLoyaltyPlanInfo', planCode?: string | null, membershipNumber?: number | null } | null }, supplierAmount?: { __typename?: 'ExpediaSupplierAmount', rateType: RateType, currencyCode: string } | null, reservationIds: Array<{ __typename?: 'IdNode', id?: string | null, idSource: IdSource }> };
-
-export type CancelReservationMutationVariables = Exact<{
-  input: CancelReservationInput;
-}>;
-
-
-export type CancelReservationMutation = { __typename?: 'Mutation', cancelReservation: { __typename?: 'CancelReservationPayload', reservation?: { __typename?: 'Reservation', id: string, checkInDate: any, checkOutDate: any, creationDateTime: string, status: ReservationStatus, subStatus?: string | null, isReconciled?: boolean | null, reconciliationType?: string | null, tidsCode?: number | null, messageThreadId?: string | null, supplierOperatingModel?: SupplierOperatingModel | null, inventoryType?: InventoryType | null, remittanceType?: RemittanceType | null, adultCount: number, childCount: number, childAges?: Array<number | null> | null, totalGuestCount: number, petCount?: number | null, specialRequest?: string | null, paymentInstructions: string, payment: { __typename?: 'Payment', instructions: string, status?: ReservationPaymentStatus | null, instrument?: { __typename?: 'PaymentInstrument', type: PaymentInstrumentType, token: { __typename?: 'PaymentToken', value?: string | null, expirationDateTime?: string | null } } | null, installments: Array<{ __typename?: 'Installment', dueDate: any, amount: { __typename?: 'Money', currencyCode: any, amount: any }, distributions: Array<{ __typename?: 'InstallmentDistribution', type: string, amount: { __typename?: 'Money', currencyCode: any, amount: any } }> }> }, primaryGuest: { __typename?: 'Guest', firstName: string, lastName: string, loyaltyTier?: string | null, emailAddress?: any | null, travelPurpose?: TravelPurpose | null, phoneNumbers?: Array<{ __typename?: 'GuestContactPhoneNumber', countryCode: string, areaCode: string, number: string }> | null, supplierLoyaltyPlanInfo?: { __typename?: 'SupplierLoyaltyPlanInfo', planCode?: string | null, membershipNumber?: number | null } | null }, supplierAmount?: { __typename?: 'ExpediaSupplierAmount', rateType: RateType, currencyCode: string } | null, reservationIds: Array<{ __typename?: 'IdNode', id?: string | null, idSource: IdSource }> } | null } };
-
-export type CancelReservationReconciliationMutationVariables = Exact<{
-  input: CancelReservationReconciliationInput;
-}>;
-
-
-export type CancelReservationReconciliationMutation = { __typename?: 'Mutation', cancelReservationReconciliation: { __typename?: 'CancelReservationReconciliationPayload', reservation?: { __typename?: 'Reservation', id: string, checkInDate: any, checkOutDate: any, creationDateTime: string, status: ReservationStatus, subStatus?: string | null, isReconciled?: boolean | null, reconciliationType?: string | null, tidsCode?: number | null, messageThreadId?: string | null, supplierOperatingModel?: SupplierOperatingModel | null, inventoryType?: InventoryType | null, remittanceType?: RemittanceType | null, adultCount: number, childCount: number, childAges?: Array<number | null> | null, totalGuestCount: number, petCount?: number | null, specialRequest?: string | null, paymentInstructions: string, payment: { __typename?: 'Payment', instructions: string, status?: ReservationPaymentStatus | null, instrument?: { __typename?: 'PaymentInstrument', type: PaymentInstrumentType, token: { __typename?: 'PaymentToken', value?: string | null, expirationDateTime?: string | null } } | null, installments: Array<{ __typename?: 'Installment', dueDate: any, amount: { __typename?: 'Money', currencyCode: any, amount: any }, distributions: Array<{ __typename?: 'InstallmentDistribution', type: string, amount: { __typename?: 'Money', currencyCode: any, amount: any } }> }> }, primaryGuest: { __typename?: 'Guest', firstName: string, lastName: string, loyaltyTier?: string | null, emailAddress?: any | null, travelPurpose?: TravelPurpose | null, phoneNumbers?: Array<{ __typename?: 'GuestContactPhoneNumber', countryCode: string, areaCode: string, number: string }> | null, supplierLoyaltyPlanInfo?: { __typename?: 'SupplierLoyaltyPlanInfo', planCode?: string | null, membershipNumber?: number | null } | null }, supplierAmount?: { __typename?: 'ExpediaSupplierAmount', rateType: RateType, currencyCode: string } | null, reservationIds: Array<{ __typename?: 'IdNode', id?: string | null, idSource: IdSource }> } | null } };
-
-export type ChangeReservationReconciliationMutationVariables = Exact<{
-  input: ChangeReservationReconciliationInput;
-}>;
-
-
-export type ChangeReservationReconciliationMutation = { __typename?: 'Mutation', changeReservationReconciliation: { __typename?: 'ChangeReservationReconciliationPayload', reservation?: { __typename?: 'Reservation', id: string, checkInDate: any, checkOutDate: any, creationDateTime: string, status: ReservationStatus, subStatus?: string | null, isReconciled?: boolean | null, reconciliationType?: string | null, tidsCode?: number | null, messageThreadId?: string | null, supplierOperatingModel?: SupplierOperatingModel | null, inventoryType?: InventoryType | null, remittanceType?: RemittanceType | null, adultCount: number, childCount: number, childAges?: Array<number | null> | null, totalGuestCount: number, petCount?: number | null, specialRequest?: string | null, paymentInstructions: string, payment: { __typename?: 'Payment', instructions: string, status?: ReservationPaymentStatus | null, instrument?: { __typename?: 'PaymentInstrument', type: PaymentInstrumentType, token: { __typename?: 'PaymentToken', value?: string | null, expirationDateTime?: string | null } } | null, installments: Array<{ __typename?: 'Installment', dueDate: any, amount: { __typename?: 'Money', currencyCode: any, amount: any }, distributions: Array<{ __typename?: 'InstallmentDistribution', type: string, amount: { __typename?: 'Money', currencyCode: any, amount: any } }> }> }, primaryGuest: { __typename?: 'Guest', firstName: string, lastName: string, loyaltyTier?: string | null, emailAddress?: any | null, travelPurpose?: TravelPurpose | null, phoneNumbers?: Array<{ __typename?: 'GuestContactPhoneNumber', countryCode: string, areaCode: string, number: string }> | null, supplierLoyaltyPlanInfo?: { __typename?: 'SupplierLoyaltyPlanInfo', planCode?: string | null, membershipNumber?: number | null } | null }, supplierAmount?: { __typename?: 'ExpediaSupplierAmount', rateType: RateType, currencyCode: string } | null, reservationIds: Array<{ __typename?: 'IdNode', id?: string | null, idSource: IdSource }> } | null } };
-
-export type ConfirmReservationNotificationMutationVariables = Exact<{
-  input: ConfirmReservationNotificationInput;
-}>;
-
-
-export type ConfirmReservationNotificationMutation = { __typename?: 'Mutation', confirmReservationNotification: { __typename?: 'ConfirmReservationNotificationPayload', clientMutationId?: string | null, reservation?: { __typename?: 'Reservation', id: string, checkInDate: any, checkOutDate: any, creationDateTime: string, status: ReservationStatus, subStatus?: string | null, isReconciled?: boolean | null, reconciliationType?: string | null, tidsCode?: number | null, messageThreadId?: string | null, supplierOperatingModel?: SupplierOperatingModel | null, inventoryType?: InventoryType | null, remittanceType?: RemittanceType | null, adultCount: number, childCount: number, childAges?: Array<number | null> | null, totalGuestCount: number, petCount?: number | null, specialRequest?: string | null, paymentInstructions: string, payment: { __typename?: 'Payment', instructions: string, status?: ReservationPaymentStatus | null, instrument?: { __typename?: 'PaymentInstrument', type: PaymentInstrumentType, token: { __typename?: 'PaymentToken', value?: string | null, expirationDateTime?: string | null } } | null, installments: Array<{ __typename?: 'Installment', dueDate: any, amount: { __typename?: 'Money', currencyCode: any, amount: any }, distributions: Array<{ __typename?: 'InstallmentDistribution', type: string, amount: { __typename?: 'Money', currencyCode: any, amount: any } }> }> }, primaryGuest: { __typename?: 'Guest', firstName: string, lastName: string, loyaltyTier?: string | null, emailAddress?: any | null, travelPurpose?: TravelPurpose | null, phoneNumbers?: Array<{ __typename?: 'GuestContactPhoneNumber', countryCode: string, areaCode: string, number: string }> | null, supplierLoyaltyPlanInfo?: { __typename?: 'SupplierLoyaltyPlanInfo', planCode?: string | null, membershipNumber?: number | null } | null }, supplierAmount?: { __typename?: 'ExpediaSupplierAmount', rateType: RateType, currencyCode: string } | null, reservationIds: Array<{ __typename?: 'IdNode', id?: string | null, idSource: IdSource }> } | null } };
-
-export type CreateNotificationCallbackConfigMutationVariables = Exact<{
-  input: CreateNotificationCallbackConfigInput;
-}>;
-
-
-export type CreateNotificationCallbackConfigMutation = { __typename?: 'Mutation', createNotificationCallbackConfig?: { __typename?: 'CreateNotificationCallbackConfigPayload', secret: string, callbackConfig: { __typename?: 'NotificationCallbackConfig', id: string, callbackUrl: any, secretExpirationDateTime: any, requestTimeoutSeconds: number } } | null };
-
-export type DeleteNotificationCallbackConfigMutationVariables = Exact<{
-  input: DeleteNotificationCallbackConfigInput;
-}>;
-
-
-export type DeleteNotificationCallbackConfigMutation = { __typename?: 'Mutation', deleteNotificationCallbackConfig?: { __typename?: 'DeleteNotificationCallbackConfigPayload', callbackConfigId: string } | null };
-
-export type RefreshNotificationCallbackConfigSecretMutationVariables = Exact<{
-  input: RefreshNotificationCallbackConfigSecretInput;
-}>;
-
-
-export type RefreshNotificationCallbackConfigSecretMutation = { __typename?: 'Mutation', refreshNotificationCallbackConfigSecret?: { __typename?: 'RefreshNotificationCallbackConfigSecretPayload', callbackConfigId: string, secret: string, secretExpirationDateTime: any } | null };
-
-export type RefundReservationMutationVariables = Exact<{
-  input: RefundReservationInput;
-}>;
-
-
-export type RefundReservationMutation = { __typename?: 'Mutation', refundReservation: { __typename?: 'RefundReservationPayload', reservation?: { __typename?: 'Reservation', id: string, checkInDate: any, checkOutDate: any, creationDateTime: string, status: ReservationStatus, subStatus?: string | null, isReconciled?: boolean | null, reconciliationType?: string | null, tidsCode?: number | null, messageThreadId?: string | null, supplierOperatingModel?: SupplierOperatingModel | null, inventoryType?: InventoryType | null, remittanceType?: RemittanceType | null, adultCount: number, childCount: number, childAges?: Array<number | null> | null, totalGuestCount: number, petCount?: number | null, specialRequest?: string | null, paymentInstructions: string, payment: { __typename?: 'Payment', instructions: string, status?: ReservationPaymentStatus | null, instrument?: { __typename?: 'PaymentInstrument', type: PaymentInstrumentType, token: { __typename?: 'PaymentToken', value?: string | null, expirationDateTime?: string | null } } | null, installments: Array<{ __typename?: 'Installment', dueDate: any, amount: { __typename?: 'Money', currencyCode: any, amount: any }, distributions: Array<{ __typename?: 'InstallmentDistribution', type: string, amount: { __typename?: 'Money', currencyCode: any, amount: any } }> }> }, primaryGuest: { __typename?: 'Guest', firstName: string, lastName: string, loyaltyTier?: string | null, emailAddress?: any | null, travelPurpose?: TravelPurpose | null, phoneNumbers?: Array<{ __typename?: 'GuestContactPhoneNumber', countryCode: string, areaCode: string, number: string }> | null, supplierLoyaltyPlanInfo?: { __typename?: 'SupplierLoyaltyPlanInfo', planCode?: string | null, membershipNumber?: number | null } | null }, supplierAmount?: { __typename?: 'ExpediaSupplierAmount', rateType: RateType, currencyCode: string } | null, reservationIds: Array<{ __typename?: 'IdNode', id?: string | null, idSource: IdSource }> } | null } };
-
-export type SendTestNotificationMutationVariables = Exact<{
-  input: SendTestNotificationInput;
-}>;
-
-
-export type SendTestNotificationMutation = { __typename?: 'Mutation', sendTestNotification?: { __typename?: 'SendTestNotificationPayload', httpStatusCode?: number | null, outcome: TestNotificationOutcome, error?: { __typename?: 'TestNotificationError', code: string, message: string } | null } | null };
-
-export type SubscribeNotificationEventTypeMutationVariables = Exact<{
-  input: SubscribeNotificationEventTypeInput;
-}>;
-
-
-export type SubscribeNotificationEventTypeMutation = { __typename?: 'Mutation', subscribeNotificationEventType?: { __typename?: 'SubscribeNotificationEventTypePayload', eventType: string, callbackConfig: { __typename?: 'NotificationCallbackConfig', id: string, callbackUrl: any, secretExpirationDateTime: any, requestTimeoutSeconds: number } } | null };
-
-export type UnsubscribeNotificationEventTypeMutationVariables = Exact<{
-  input: UnsubscribeNotificationEventTypeInput;
-}>;
-
-
-export type UnsubscribeNotificationEventTypeMutation = { __typename?: 'Mutation', unsubscribeNotificationEventType?: { __typename?: 'UnsubscribeNotificationEventTypePayload', eventType: string } | null };
-
-export type UpdateNotificationCallbackConfigMutationVariables = Exact<{
-  input: UpdateNotificationCallbackConfigInput;
-}>;
-
-
-export type UpdateNotificationCallbackConfigMutation = { __typename?: 'Mutation', updateNotificationCallbackConfig?: { __typename?: 'UpdateNotificationCallbackConfigPayload', callbackConfig: { __typename?: 'NotificationCallbackConfig', id: string, callbackUrl: any, secretExpirationDateTime: any, requestTimeoutSeconds: number } } | null };
-
-export type UpdateNotificationEventTypeSubscriptionMutationVariables = Exact<{
-  input: UpdateNotificationEventTypeSubscriptionInput;
-}>;
-
-
-export type UpdateNotificationEventTypeSubscriptionMutation = { __typename?: 'Mutation', updateNotificationEventTypeSubscription?: { __typename?: 'UpdateNotificationEventTypeSubscriptionPayload', eventType: string, callbackConfig: { __typename?: 'NotificationCallbackConfig', id: string, callbackUrl: any, secretExpirationDateTime: any, requestTimeoutSeconds: number } } | null };
-
-export type MessageQueryVariables = Exact<{
-  messageId: Scalars['ID']['input'];
-}>;
-
-
-export type MessageQuery = { __typename?: 'Query', message?: { __typename?: 'MessageThreadMessage', type?: string | null } | null };
-
-export type NotificationEventTypesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type NotificationEventTypesQuery = { __typename?: 'Query', notificationEventTypes?: Array<{ __typename?: 'NotificationEventType', name: string, description: string }> | null };
-
-export type NotificationProfileQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type NotificationProfileQuery = { __typename?: 'Query', notificationProfile?: { __typename?: 'NotificationProfile', callbackConfigs: Array<{ __typename?: 'NotificationCallbackConfig', id: string, callbackUrl: any, secretExpirationDateTime: any, requestTimeoutSeconds: number }>, subscriptions: Array<{ __typename?: 'NotificationSubscription', product: string, eventTypeSubscriptions: Array<{ __typename?: 'NotificationEventTypeSubscription', eventType: string, callbackConfig: { __typename?: 'NotificationCallbackConfig', id: string, callbackUrl: any, secretExpirationDateTime: any, requestTimeoutSeconds: number } }> }> } | null };
-
-export type PropertyQueryVariables = Exact<{
-  propertyId: Scalars['String']['input'];
-  idSource?: InputMaybe<IdSource>;
-  checkOutDate?: InputMaybe<CheckOutDateFilter>;
-  filter?: InputMaybe<ReservationFilterInput>;
-  pageSize: Scalars['Int']['input'];
-  after?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type PropertyQuery = { __typename?: 'Query', property?: { __typename?: 'Property', id: string, name: string, reservations: { __typename?: 'ReservationsConnection', totalCount?: number | null, pageInfo?: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null } | null, edges: Array<{ __typename?: 'ReservationEdge', cursor: string, node: { __typename?: 'Reservation', id: string, checkInDate: any, checkOutDate: any, creationDateTime: string, status: ReservationStatus, subStatus?: string | null, isReconciled?: boolean | null, reconciliationType?: string | null, tidsCode?: number | null, messageThreadId?: string | null, supplierOperatingModel?: SupplierOperatingModel | null, inventoryType?: InventoryType | null, remittanceType?: RemittanceType | null, adultCount: number, childCount: number, childAges?: Array<number | null> | null, totalGuestCount: number, petCount?: number | null, specialRequest?: string | null, paymentInstructions: string, payment: { __typename?: 'Payment', instructions: string, status?: ReservationPaymentStatus | null, instrument?: { __typename?: 'PaymentInstrument', type: PaymentInstrumentType, token: { __typename?: 'PaymentToken', value?: string | null, expirationDateTime?: string | null } } | null, installments: Array<{ __typename?: 'Installment', dueDate: any, amount: { __typename?: 'Money', currencyCode: any, amount: any }, distributions: Array<{ __typename?: 'InstallmentDistribution', type: string, amount: { __typename?: 'Money', currencyCode: any, amount: any } }> }> }, primaryGuest: { __typename?: 'Guest', firstName: string, lastName: string, loyaltyTier?: string | null, emailAddress?: any | null, travelPurpose?: TravelPurpose | null, phoneNumbers?: Array<{ __typename?: 'GuestContactPhoneNumber', countryCode: string, areaCode: string, number: string }> | null, supplierLoyaltyPlanInfo?: { __typename?: 'SupplierLoyaltyPlanInfo', planCode?: string | null, membershipNumber?: number | null } | null }, supplierAmount?: { __typename?: 'ExpediaSupplierAmount', rateType: RateType, currencyCode: string } | null, reservationIds: Array<{ __typename?: 'IdNode', id?: string | null, idSource: IdSource }> } } | null> } } | null };
-
-export const NotificationCallbackConfigFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationCallbackConfigFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationCallbackConfig"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"callbackUrl"}},{"kind":"Field","name":{"kind":"Name","value":"secretExpirationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"requestTimeoutSeconds"}}]}}]} as unknown as DocumentNode<NotificationCallbackConfigFragmentFragment, unknown>;
-export const ReservationFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ReservationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Reservation"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"checkInDate"}},{"kind":"Field","name":{"kind":"Name","value":"checkOutDate"}},{"kind":"Field","name":{"kind":"Name","value":"creationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"subStatus"}},{"kind":"Field","name":{"kind":"Name","value":"isReconciled"}},{"kind":"Field","name":{"kind":"Name","value":"reconciliationType"}},{"kind":"Field","name":{"kind":"Name","value":"tidsCode"}},{"kind":"Field","name":{"kind":"Name","value":"messageThreadId"}},{"kind":"Field","name":{"kind":"Name","value":"supplierOperatingModel"}},{"kind":"Field","name":{"kind":"Name","value":"inventoryType"}},{"kind":"Field","name":{"kind":"Name","value":"remittanceType"}},{"kind":"Field","name":{"kind":"Name","value":"adultCount"}},{"kind":"Field","name":{"kind":"Name","value":"childCount"}},{"kind":"Field","name":{"kind":"Name","value":"childAges"}},{"kind":"Field","name":{"kind":"Name","value":"totalGuestCount"}},{"kind":"Field","name":{"kind":"Name","value":"petCount"}},{"kind":"Field","name":{"kind":"Name","value":"specialRequest"}},{"kind":"Field","name":{"kind":"Name","value":"paymentInstructions"}},{"kind":"Field","name":{"kind":"Name","value":"payment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"instrument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"expirationDateTime"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"instructions"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"distributions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryGuest"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"loyaltyTier"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumbers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countryCode"}},{"kind":"Field","name":{"kind":"Name","value":"areaCode"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}},{"kind":"Field","name":{"kind":"Name","value":"emailAddress"}},{"kind":"Field","name":{"kind":"Name","value":"supplierLoyaltyPlanInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"planCode"}},{"kind":"Field","name":{"kind":"Name","value":"membershipNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"travelPurpose"}}]}},{"kind":"Field","name":{"kind":"Name","value":"supplierAmount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rateType"}},{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reservationIds"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"idSource"}}]}}]}}]} as unknown as DocumentNode<ReservationFragmentFragment, unknown>;
-export const CancelReservationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CancelReservation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CancelReservationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cancelReservation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reservation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ReservationFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ReservationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Reservation"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"checkInDate"}},{"kind":"Field","name":{"kind":"Name","value":"checkOutDate"}},{"kind":"Field","name":{"kind":"Name","value":"creationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"subStatus"}},{"kind":"Field","name":{"kind":"Name","value":"isReconciled"}},{"kind":"Field","name":{"kind":"Name","value":"reconciliationType"}},{"kind":"Field","name":{"kind":"Name","value":"tidsCode"}},{"kind":"Field","name":{"kind":"Name","value":"messageThreadId"}},{"kind":"Field","name":{"kind":"Name","value":"supplierOperatingModel"}},{"kind":"Field","name":{"kind":"Name","value":"inventoryType"}},{"kind":"Field","name":{"kind":"Name","value":"remittanceType"}},{"kind":"Field","name":{"kind":"Name","value":"adultCount"}},{"kind":"Field","name":{"kind":"Name","value":"childCount"}},{"kind":"Field","name":{"kind":"Name","value":"childAges"}},{"kind":"Field","name":{"kind":"Name","value":"totalGuestCount"}},{"kind":"Field","name":{"kind":"Name","value":"petCount"}},{"kind":"Field","name":{"kind":"Name","value":"specialRequest"}},{"kind":"Field","name":{"kind":"Name","value":"paymentInstructions"}},{"kind":"Field","name":{"kind":"Name","value":"payment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"instrument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"expirationDateTime"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"instructions"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"distributions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryGuest"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"loyaltyTier"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumbers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countryCode"}},{"kind":"Field","name":{"kind":"Name","value":"areaCode"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}},{"kind":"Field","name":{"kind":"Name","value":"emailAddress"}},{"kind":"Field","name":{"kind":"Name","value":"supplierLoyaltyPlanInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"planCode"}},{"kind":"Field","name":{"kind":"Name","value":"membershipNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"travelPurpose"}}]}},{"kind":"Field","name":{"kind":"Name","value":"supplierAmount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rateType"}},{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reservationIds"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"idSource"}}]}}]}}]} as unknown as DocumentNode<CancelReservationMutation, CancelReservationMutationVariables>;
-export const CancelReservationReconciliationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CancelReservationReconciliation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CancelReservationReconciliationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cancelReservationReconciliation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reservation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ReservationFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ReservationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Reservation"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"checkInDate"}},{"kind":"Field","name":{"kind":"Name","value":"checkOutDate"}},{"kind":"Field","name":{"kind":"Name","value":"creationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"subStatus"}},{"kind":"Field","name":{"kind":"Name","value":"isReconciled"}},{"kind":"Field","name":{"kind":"Name","value":"reconciliationType"}},{"kind":"Field","name":{"kind":"Name","value":"tidsCode"}},{"kind":"Field","name":{"kind":"Name","value":"messageThreadId"}},{"kind":"Field","name":{"kind":"Name","value":"supplierOperatingModel"}},{"kind":"Field","name":{"kind":"Name","value":"inventoryType"}},{"kind":"Field","name":{"kind":"Name","value":"remittanceType"}},{"kind":"Field","name":{"kind":"Name","value":"adultCount"}},{"kind":"Field","name":{"kind":"Name","value":"childCount"}},{"kind":"Field","name":{"kind":"Name","value":"childAges"}},{"kind":"Field","name":{"kind":"Name","value":"totalGuestCount"}},{"kind":"Field","name":{"kind":"Name","value":"petCount"}},{"kind":"Field","name":{"kind":"Name","value":"specialRequest"}},{"kind":"Field","name":{"kind":"Name","value":"paymentInstructions"}},{"kind":"Field","name":{"kind":"Name","value":"payment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"instrument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"expirationDateTime"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"instructions"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"distributions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryGuest"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"loyaltyTier"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumbers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countryCode"}},{"kind":"Field","name":{"kind":"Name","value":"areaCode"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}},{"kind":"Field","name":{"kind":"Name","value":"emailAddress"}},{"kind":"Field","name":{"kind":"Name","value":"supplierLoyaltyPlanInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"planCode"}},{"kind":"Field","name":{"kind":"Name","value":"membershipNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"travelPurpose"}}]}},{"kind":"Field","name":{"kind":"Name","value":"supplierAmount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rateType"}},{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reservationIds"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"idSource"}}]}}]}}]} as unknown as DocumentNode<CancelReservationReconciliationMutation, CancelReservationReconciliationMutationVariables>;
-export const ChangeReservationReconciliationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ChangeReservationReconciliation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ChangeReservationReconciliationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"changeReservationReconciliation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reservation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ReservationFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ReservationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Reservation"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"checkInDate"}},{"kind":"Field","name":{"kind":"Name","value":"checkOutDate"}},{"kind":"Field","name":{"kind":"Name","value":"creationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"subStatus"}},{"kind":"Field","name":{"kind":"Name","value":"isReconciled"}},{"kind":"Field","name":{"kind":"Name","value":"reconciliationType"}},{"kind":"Field","name":{"kind":"Name","value":"tidsCode"}},{"kind":"Field","name":{"kind":"Name","value":"messageThreadId"}},{"kind":"Field","name":{"kind":"Name","value":"supplierOperatingModel"}},{"kind":"Field","name":{"kind":"Name","value":"inventoryType"}},{"kind":"Field","name":{"kind":"Name","value":"remittanceType"}},{"kind":"Field","name":{"kind":"Name","value":"adultCount"}},{"kind":"Field","name":{"kind":"Name","value":"childCount"}},{"kind":"Field","name":{"kind":"Name","value":"childAges"}},{"kind":"Field","name":{"kind":"Name","value":"totalGuestCount"}},{"kind":"Field","name":{"kind":"Name","value":"petCount"}},{"kind":"Field","name":{"kind":"Name","value":"specialRequest"}},{"kind":"Field","name":{"kind":"Name","value":"paymentInstructions"}},{"kind":"Field","name":{"kind":"Name","value":"payment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"instrument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"expirationDateTime"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"instructions"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"distributions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryGuest"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"loyaltyTier"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumbers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countryCode"}},{"kind":"Field","name":{"kind":"Name","value":"areaCode"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}},{"kind":"Field","name":{"kind":"Name","value":"emailAddress"}},{"kind":"Field","name":{"kind":"Name","value":"supplierLoyaltyPlanInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"planCode"}},{"kind":"Field","name":{"kind":"Name","value":"membershipNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"travelPurpose"}}]}},{"kind":"Field","name":{"kind":"Name","value":"supplierAmount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rateType"}},{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reservationIds"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"idSource"}}]}}]}}]} as unknown as DocumentNode<ChangeReservationReconciliationMutation, ChangeReservationReconciliationMutationVariables>;
-export const ConfirmReservationNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ConfirmReservationNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ConfirmReservationNotificationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"confirmReservationNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientMutationId"}},{"kind":"Field","name":{"kind":"Name","value":"reservation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ReservationFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ReservationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Reservation"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"checkInDate"}},{"kind":"Field","name":{"kind":"Name","value":"checkOutDate"}},{"kind":"Field","name":{"kind":"Name","value":"creationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"subStatus"}},{"kind":"Field","name":{"kind":"Name","value":"isReconciled"}},{"kind":"Field","name":{"kind":"Name","value":"reconciliationType"}},{"kind":"Field","name":{"kind":"Name","value":"tidsCode"}},{"kind":"Field","name":{"kind":"Name","value":"messageThreadId"}},{"kind":"Field","name":{"kind":"Name","value":"supplierOperatingModel"}},{"kind":"Field","name":{"kind":"Name","value":"inventoryType"}},{"kind":"Field","name":{"kind":"Name","value":"remittanceType"}},{"kind":"Field","name":{"kind":"Name","value":"adultCount"}},{"kind":"Field","name":{"kind":"Name","value":"childCount"}},{"kind":"Field","name":{"kind":"Name","value":"childAges"}},{"kind":"Field","name":{"kind":"Name","value":"totalGuestCount"}},{"kind":"Field","name":{"kind":"Name","value":"petCount"}},{"kind":"Field","name":{"kind":"Name","value":"specialRequest"}},{"kind":"Field","name":{"kind":"Name","value":"paymentInstructions"}},{"kind":"Field","name":{"kind":"Name","value":"payment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"instrument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"expirationDateTime"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"instructions"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"distributions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryGuest"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"loyaltyTier"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumbers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countryCode"}},{"kind":"Field","name":{"kind":"Name","value":"areaCode"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}},{"kind":"Field","name":{"kind":"Name","value":"emailAddress"}},{"kind":"Field","name":{"kind":"Name","value":"supplierLoyaltyPlanInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"planCode"}},{"kind":"Field","name":{"kind":"Name","value":"membershipNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"travelPurpose"}}]}},{"kind":"Field","name":{"kind":"Name","value":"supplierAmount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rateType"}},{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reservationIds"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"idSource"}}]}}]}}]} as unknown as DocumentNode<ConfirmReservationNotificationMutation, ConfirmReservationNotificationMutationVariables>;
-export const CreateNotificationCallbackConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateNotificationCallbackConfig"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateNotificationCallbackConfigInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createNotificationCallbackConfig"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"secret"}},{"kind":"Field","name":{"kind":"Name","value":"callbackConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationCallbackConfigFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationCallbackConfigFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationCallbackConfig"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"callbackUrl"}},{"kind":"Field","name":{"kind":"Name","value":"secretExpirationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"requestTimeoutSeconds"}}]}}]} as unknown as DocumentNode<CreateNotificationCallbackConfigMutation, CreateNotificationCallbackConfigMutationVariables>;
-export const DeleteNotificationCallbackConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteNotificationCallbackConfig"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteNotificationCallbackConfigInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteNotificationCallbackConfig"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"callbackConfigId"}}]}}]}}]} as unknown as DocumentNode<DeleteNotificationCallbackConfigMutation, DeleteNotificationCallbackConfigMutationVariables>;
-export const RefreshNotificationCallbackConfigSecretDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RefreshNotificationCallbackConfigSecret"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RefreshNotificationCallbackConfigSecretInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refreshNotificationCallbackConfigSecret"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"callbackConfigId"}},{"kind":"Field","name":{"kind":"Name","value":"secret"}},{"kind":"Field","name":{"kind":"Name","value":"secretExpirationDateTime"}}]}}]}}]} as unknown as DocumentNode<RefreshNotificationCallbackConfigSecretMutation, RefreshNotificationCallbackConfigSecretMutationVariables>;
-export const RefundReservationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RefundReservation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RefundReservationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refundReservation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reservation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ReservationFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ReservationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Reservation"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"checkInDate"}},{"kind":"Field","name":{"kind":"Name","value":"checkOutDate"}},{"kind":"Field","name":{"kind":"Name","value":"creationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"subStatus"}},{"kind":"Field","name":{"kind":"Name","value":"isReconciled"}},{"kind":"Field","name":{"kind":"Name","value":"reconciliationType"}},{"kind":"Field","name":{"kind":"Name","value":"tidsCode"}},{"kind":"Field","name":{"kind":"Name","value":"messageThreadId"}},{"kind":"Field","name":{"kind":"Name","value":"supplierOperatingModel"}},{"kind":"Field","name":{"kind":"Name","value":"inventoryType"}},{"kind":"Field","name":{"kind":"Name","value":"remittanceType"}},{"kind":"Field","name":{"kind":"Name","value":"adultCount"}},{"kind":"Field","name":{"kind":"Name","value":"childCount"}},{"kind":"Field","name":{"kind":"Name","value":"childAges"}},{"kind":"Field","name":{"kind":"Name","value":"totalGuestCount"}},{"kind":"Field","name":{"kind":"Name","value":"petCount"}},{"kind":"Field","name":{"kind":"Name","value":"specialRequest"}},{"kind":"Field","name":{"kind":"Name","value":"paymentInstructions"}},{"kind":"Field","name":{"kind":"Name","value":"payment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"instrument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"expirationDateTime"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"instructions"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"distributions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryGuest"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"loyaltyTier"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumbers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countryCode"}},{"kind":"Field","name":{"kind":"Name","value":"areaCode"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}},{"kind":"Field","name":{"kind":"Name","value":"emailAddress"}},{"kind":"Field","name":{"kind":"Name","value":"supplierLoyaltyPlanInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"planCode"}},{"kind":"Field","name":{"kind":"Name","value":"membershipNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"travelPurpose"}}]}},{"kind":"Field","name":{"kind":"Name","value":"supplierAmount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rateType"}},{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reservationIds"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"idSource"}}]}}]}}]} as unknown as DocumentNode<RefundReservationMutation, RefundReservationMutationVariables>;
-export const SendTestNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SendTestNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SendTestNotificationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendTestNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"httpStatusCode"}},{"kind":"Field","name":{"kind":"Name","value":"outcome"}},{"kind":"Field","name":{"kind":"Name","value":"error"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<SendTestNotificationMutation, SendTestNotificationMutationVariables>;
-export const SubscribeNotificationEventTypeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SubscribeNotificationEventType"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SubscribeNotificationEventTypeInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subscribeNotificationEventType"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventType"}},{"kind":"Field","name":{"kind":"Name","value":"callbackConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationCallbackConfigFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationCallbackConfigFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationCallbackConfig"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"callbackUrl"}},{"kind":"Field","name":{"kind":"Name","value":"secretExpirationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"requestTimeoutSeconds"}}]}}]} as unknown as DocumentNode<SubscribeNotificationEventTypeMutation, SubscribeNotificationEventTypeMutationVariables>;
-export const UnsubscribeNotificationEventTypeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UnsubscribeNotificationEventType"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UnsubscribeNotificationEventTypeInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"unsubscribeNotificationEventType"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventType"}}]}}]}}]} as unknown as DocumentNode<UnsubscribeNotificationEventTypeMutation, UnsubscribeNotificationEventTypeMutationVariables>;
-export const UpdateNotificationCallbackConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateNotificationCallbackConfig"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateNotificationCallbackConfigInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateNotificationCallbackConfig"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"callbackConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationCallbackConfigFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationCallbackConfigFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationCallbackConfig"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"callbackUrl"}},{"kind":"Field","name":{"kind":"Name","value":"secretExpirationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"requestTimeoutSeconds"}}]}}]} as unknown as DocumentNode<UpdateNotificationCallbackConfigMutation, UpdateNotificationCallbackConfigMutationVariables>;
-export const UpdateNotificationEventTypeSubscriptionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateNotificationEventTypeSubscription"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateNotificationEventTypeSubscriptionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateNotificationEventTypeSubscription"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventType"}},{"kind":"Field","name":{"kind":"Name","value":"callbackConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NotificationCallbackConfigFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NotificationCallbackConfigFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotificationCallbackConfig"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"callbackUrl"}},{"kind":"Field","name":{"kind":"Name","value":"secretExpirationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"requestTimeoutSeconds"}}]}}]} as unknown as DocumentNode<UpdateNotificationEventTypeSubscriptionMutation, UpdateNotificationEventTypeSubscriptionMutationVariables>;
-export const MessageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Message"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"messageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"messageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<MessageQuery, MessageQueryVariables>;
-export const NotificationEventTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NotificationEventTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notificationEventTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<NotificationEventTypesQuery, NotificationEventTypesQueryVariables>;
-export const NotificationProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NotificationProfile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notificationProfile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"callbackConfigs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"callbackUrl"}},{"kind":"Field","name":{"kind":"Name","value":"secretExpirationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"requestTimeoutSeconds"}}]}},{"kind":"Field","name":{"kind":"Name","value":"subscriptions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"product"}},{"kind":"Field","name":{"kind":"Name","value":"eventTypeSubscriptions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventType"}},{"kind":"Field","name":{"kind":"Name","value":"callbackConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"callbackUrl"}},{"kind":"Field","name":{"kind":"Name","value":"secretExpirationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"requestTimeoutSeconds"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<NotificationProfileQuery, NotificationProfileQueryVariables>;
-export const PropertyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Property"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"propertyId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"idSource"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"IdSource"}},"defaultValue":{"kind":"EnumValue","value":"EXPEDIA"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"checkOutDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CheckOutDateFilter"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ReservationFilterInput"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"property"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"propertyId"}}},{"kind":"Argument","name":{"kind":"Name","value":"idSource"},"value":{"kind":"Variable","name":{"kind":"Name","value":"idSource"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"reservations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageSize"}}},{"kind":"Argument","name":{"kind":"Name","value":"checkOutDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"checkOutDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}}]}},{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ReservationFragment"}}]}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ReservationFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Reservation"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"checkInDate"}},{"kind":"Field","name":{"kind":"Name","value":"checkOutDate"}},{"kind":"Field","name":{"kind":"Name","value":"creationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"subStatus"}},{"kind":"Field","name":{"kind":"Name","value":"isReconciled"}},{"kind":"Field","name":{"kind":"Name","value":"reconciliationType"}},{"kind":"Field","name":{"kind":"Name","value":"tidsCode"}},{"kind":"Field","name":{"kind":"Name","value":"messageThreadId"}},{"kind":"Field","name":{"kind":"Name","value":"supplierOperatingModel"}},{"kind":"Field","name":{"kind":"Name","value":"inventoryType"}},{"kind":"Field","name":{"kind":"Name","value":"remittanceType"}},{"kind":"Field","name":{"kind":"Name","value":"adultCount"}},{"kind":"Field","name":{"kind":"Name","value":"childCount"}},{"kind":"Field","name":{"kind":"Name","value":"childAges"}},{"kind":"Field","name":{"kind":"Name","value":"totalGuestCount"}},{"kind":"Field","name":{"kind":"Name","value":"petCount"}},{"kind":"Field","name":{"kind":"Name","value":"specialRequest"}},{"kind":"Field","name":{"kind":"Name","value":"paymentInstructions"}},{"kind":"Field","name":{"kind":"Name","value":"payment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"instrument"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"expirationDateTime"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"instructions"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"distributions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryGuest"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"loyaltyTier"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumbers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countryCode"}},{"kind":"Field","name":{"kind":"Name","value":"areaCode"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}},{"kind":"Field","name":{"kind":"Name","value":"emailAddress"}},{"kind":"Field","name":{"kind":"Name","value":"supplierLoyaltyPlanInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"planCode"}},{"kind":"Field","name":{"kind":"Name","value":"membershipNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"travelPurpose"}}]}},{"kind":"Field","name":{"kind":"Name","value":"supplierAmount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rateType"}},{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reservationIds"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"idSource"}}]}}]}}]} as unknown as DocumentNode<PropertyQuery, PropertyQueryVariables>;

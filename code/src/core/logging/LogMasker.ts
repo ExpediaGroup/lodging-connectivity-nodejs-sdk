@@ -27,13 +27,13 @@ import {
   InternalAxiosRequestConfig,
   RawAxiosResponseHeaders
 } from 'axios';
-import _ from 'lodash';
+import { cloneDeep } from 'lodash';
 import { LoggingMessage } from '../constant/Logging';
 import { LOG_MASKING_BODY_FIELDS, LOG_MASKING_HEADERS } from '../constant/LogMaskingFields';
 import { Serializer } from '../serialization/Serializer';
 
 export function maskRequestConfig(config: InternalAxiosRequestConfig<any>): InternalAxiosRequestConfig<any> {
-  const clone: InternalAxiosRequestConfig<any> = _.cloneDeep(config);
+  const clone: InternalAxiosRequestConfig<any> = cloneDeep(config);
   clone.headers = maskRequestConfigHeaders(clone.headers);
   clone.data = stringifyData(maskBodyFields(clone.data));
   clone.auth = maskAuthCredentials(clone.auth);
@@ -41,9 +41,10 @@ export function maskRequestConfig(config: InternalAxiosRequestConfig<any>): Inte
 }
 
 export function maskResponse(config: AxiosResponse<any, any>): AxiosResponse<any, any> {
-  const clone: AxiosResponse<any, any> = _.cloneDeep(config);
+  const clone: AxiosResponse<any, any> = cloneDeep(config);
   clone.headers = maskResponseHeaders(clone.headers);
   clone.data = maskBodyFields(clone.data);
+  clone.config.headers = maskRequestConfigHeaders(clone.config.headers);
   clone.config.auth = maskAuthCredentials(clone.config.auth);
   clone.config.data = LoggingMessage.OMITTED;
   delete clone.request;
