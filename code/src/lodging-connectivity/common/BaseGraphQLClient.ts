@@ -18,8 +18,18 @@
  * Do not edit the class manually.
  */
 
-import { ApolloClient, HttpLink, InMemoryCache, NormalizedCacheObject } from '@apollo/client/core';
+import {
+  ApolloClient,
+  HttpLink,
+  InMemoryCache,
+  MutationOptions,
+  NormalizedCacheObject,
+  OperationVariables,
+  QueryOptions
+} from '@apollo/client/core';
+
 import { ClientConfigurations } from '../../core/client/Client';
+import { ExpediaGroupServiceError } from '../../core/model/error/service/ExpediaGroupServiceError';
 import { ApolloAxiosClient } from './ApolloAxiosClient';
 
 export abstract class BaseGraphQLClient {
@@ -33,13 +43,33 @@ export abstract class BaseGraphQLClient {
     this.apolloClient = this.initializeApolloClient();
   }
 
-  public query: typeof ApolloClient.prototype.query = async (options) => {
-    return await this.apolloClient.query(options);
-  };
+  public async query<T, V extends OperationVariables>(options: QueryOptions<V, T>): Promise<T> {
+    const response = await this.apolloClient.query<T, V>(options);
 
-  public mutate: typeof ApolloClient.prototype.mutate = async (options) => {
-    return await this.apolloClient.mutate(options);
-  };
+    if (response.error) {
+      throw new ExpediaGroupServiceError(JSON.stringify(response.error));
+    }
+
+    if (response.errors) {
+      throw new ExpediaGroupServiceError(JSON.stringify(response.errors));
+    }
+
+    return response.data;
+  }
+
+  public async mutate<T, V extends OperationVariables>(options: MutationOptions<T, V>): Promise<T> {
+    const { data, errors } = await this.apolloClient.mutate(options);
+
+    if (errors) {
+      throw new ExpediaGroupServiceError(JSON.stringify(errors));
+    }
+
+    if (!data) {
+      throw new ExpediaGroupServiceError('Something went wrong!');
+    }
+
+    return data;
+  }
 
   private initializeApolloClient() {
     return new ApolloClient({
