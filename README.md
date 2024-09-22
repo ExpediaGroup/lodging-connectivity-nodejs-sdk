@@ -25,7 +25,7 @@ yarn add @expediagroup/lodging-connectivity-sdk@1.0.0-beta
 ```
 
 ## Quick Start
-Once you have the SDK dependency installed, you can start using its capabilities. The SDK contains four different clients, each linked to a separate endpoint
+Once you have the SDK dependency installed, you can start using its capabilities. The SDK contains three different clients, each linked to a separate endpoint
 
 1. Supply Client
 2. Payment Client
