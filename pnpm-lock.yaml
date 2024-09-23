@@ -82,7 +82,7 @@ importers:
         version: 3.13.1
     devDependencies:
       '@gobstones/typedoc-theme-gobstones':
-        specifier: ^0.3.1
+        specifier: 0.3.1
         version: 0.3.1(typedoc@0.26.7(typescript@5.5.4))
       '@graphql-codegen/cli':
         specifier: ^5.0.2
