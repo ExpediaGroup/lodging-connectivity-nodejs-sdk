@@ -16,12 +16,12 @@ With robust features and seamless integration, it enhances developer productivit
 
 **NPM**
 ```bash
-npm install @expediagroup/lodging-connectivity-sdk@1.0.0-beta
+npm install @expediagroup/lodging-connectivity-sdk
 ```
 
 **Yarn**
 ```bash
-yarn add @expediagroup/lodging-connectivity-sdk@1.0.0-beta
+yarn add @expediagroup/lodging-connectivity-sdk
 ```
 
 ## Quick Start
