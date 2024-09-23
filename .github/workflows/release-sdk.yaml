@@ -1,0 +1,54 @@
+name: Release SDK to NPM
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        type: choice
+        description: |
+          Choose the release channel/tag.
+          Make sure to update the version in package.json before publishing.
+        options:
+          - beta
+          - production
+        default: 'beta'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          cd code
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          version="$(pnpm pkg get version --workspace='@expediagroup/lodging-connectivity-sdk' | sed -n 's/.*"\(.*\)".*/\1/p')"
+          echo "Current version: $version"
+
+          pnpm i
+
+          if [ "${{ inputs.channel }}" == "production" ]; then
+            echo "Publishing a production release: $version"
+            pnpm run publish:prod
+          elif [ "${{ inputs.channel }}" == "beta" ]; then
+            echo "Publishing a beta release: $version"
+            pnpm run publish:beta
+          fi
