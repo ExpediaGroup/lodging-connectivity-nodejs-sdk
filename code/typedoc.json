@@ -1,0 +1,29 @@
+{
+  "name": "Lodging Connectivity SDK",
+  "includeVersion": true,
+  "entryPointStrategy": "expand",
+  "searchInComments": true,
+  "searchInDocuments": true,
+  "navigationLinks": {
+    "Lodging Supply": "https://developers.expediagroup.com/docs/products/lodging",
+    "SDK Source": "https://github.com/ExpediaGroup/lodging-connectivity-nodejs-sdk"
+  },
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true,
+    "includeFolders": true
+  },
+  "categorizeByGroup": true,
+  "entryPoints": [
+    "src/lodging-connectivity/common/index.ts",
+    "src/lodging-connectivity/supply/__generated__/types.ts",
+    "src/lodging-connectivity/supply/__generated__/operations.ts",
+    "src/lodging-connectivity/payment/__generated__/operations.ts",
+    "src/lodging-connectivity/payment/__generated__/types.ts"
+  ],
+  "out": "docs",
+  "plugin": [
+    "typedoc-plugin-extras"
+  ],
+  "favicon": "../assets/logo.svg"
+}
