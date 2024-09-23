@@ -45,7 +45,7 @@ jobs:
 
           pnpm i
           
-          npm unpublish @expediagroup/lodging-connectivity-sdk@1.0.0-beta --force
+          npm dist-tag rm @expediagroup/lodging-connectivity-sdk@1.0.0-beta beta
 
 #          if [ "${{ inputs.channel }}" == "production" ]; then
 #            echo "Publishing a production release: $version"
