@@ -44,13 +44,11 @@ jobs:
           echo "Current version: $version"
 
           pnpm i
-          
-          npm dist-tag rm @expediagroup/lodging-connectivity-sdk@1.0.0-beta beta
 
-#          if [ "${{ inputs.channel }}" == "production" ]; then
-#            echo "Publishing a production release: $version"
-#            pnpm run publish:prod
-#          elif [ "${{ inputs.channel }}" == "beta" ]; then
-#            echo "Publishing a beta release: $version"
-#            pnpm run publish:beta
-#          fi
+          if [ "${{ inputs.channel }}" == "production" ]; then
+            echo "Publishing a production release: $version"
+            pnpm run publish:prod
+          elif [ "${{ inputs.channel }}" == "beta" ]; then
+            echo "Publishing a beta release: $version"
+            pnpm run publish:beta
+          fi
