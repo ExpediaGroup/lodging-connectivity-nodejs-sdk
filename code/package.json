@@ -1,6 +1,6 @@
 {
   "name": "@expediagroup/lodging-connectivity-sdk",
-  "version": "0.0.3-beta",
+  "version": "0.0.1",
   "files": [
     "dist"
   ],
