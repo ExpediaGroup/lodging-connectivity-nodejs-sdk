@@ -31,7 +31,7 @@ import { BaseGraphQLClient, ClientConfiguration, ClientEnvironment, EndpointProv
  */
 export class SandboxDataManagementClient extends BaseGraphQLClient {
   constructor(config: ClientConfiguration) {
-    const env = config.environment ?? ClientEnvironment.PROD;
+    const env = config.environment ?? ClientEnvironment.SANDBOX_PROD;
 
     super({
       key: config.key,

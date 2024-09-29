@@ -14,8 +14,8 @@ enum PaymentClientEndpoint {
 }
 
 enum SandboxClientEndpoint {
-  PROD = 'https://api.sandbox.expediagroup.com/supply/lodging-sandbox/graphql',
-  TEST = 'https://test-api.sandbox.expediagroup.com/supply/lodging-sandbox/graphql'
+  SANDBOX_PROD = 'https://api.sandbox.expediagroup.com/supply/lodging-sandbox/graphql',
+  SANDBOX_TEST = 'https://test-api.sandbox.expediagroup.com/supply/lodging-sandbox/graphql'
 }
 
 enum AuthEndpoint {
@@ -38,7 +38,10 @@ export class EndpointProvider {
       return endpoint;
     }
 
-    throw new Error(`Unsupported environment [${ClientEnvironment[environment]}] for SupplyClient`);
+    throw new Error(`
+      Unsupported environment [${ClientEnvironment[environment]}] for SupplyClient.
+      Supported environments are [${Object.keys(SupplyClientEndpoint)}]
+    `);
   }
 
   static getPaymentClientEndpoint(environment: ClientEnvironment): string {
@@ -48,7 +51,10 @@ export class EndpointProvider {
       return endpoint;
     }
 
-    throw new Error(`Unsupported environment [${ClientEnvironment[environment]}] for PaymentClient`);
+    throw new Error(`
+      Unsupported environment [${ClientEnvironment[environment]}] for PaymentClient.
+      Supported environments are [${Object.keys(PaymentClientEndpoint)}]
+    `);
   }
 
   static getSandboxClientEndpoint(environment: ClientEnvironment): string {
@@ -58,7 +64,10 @@ export class EndpointProvider {
       return endpoint;
     }
 
-    throw new Error(`Unsupported environment [${ClientEnvironment[environment]}] for SandboxClient`);
+    throw new Error(`
+      Unsupported environment [${ClientEnvironment[environment]}] for SandboxClient
+      Supported environments are [${Object.keys(SandboxClientEndpoint)}]
+    `);
   }
 
   static getAuthEndpoint(environment: ClientEnvironment): string {
@@ -68,6 +77,9 @@ export class EndpointProvider {
       return endpoint;
     }
 
-    throw new Error(`Unsupported environment [${ClientEnvironment[environment]}] for Authentication`);
+    throw new Error(`
+      Unsupported environment [${ClientEnvironment[environment]}] for Authentication
+      Supported environments are [${Object.keys(AuthEndpoint)}]
+    `);
   }
 }
