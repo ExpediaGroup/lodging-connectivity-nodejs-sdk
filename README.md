@@ -1,3 +1,5 @@
+![NPM Version](https://img.shields.io/npm/v/%40expediagroup%2Flodging-connectivity-sdk?label=%40expediagroup%2Flodging-connectivity-sdk)
+
 # Expedia Group<sup>TM</sup> Lodging Connectivity Node.js SDK
 
 Designed to simplify Lodging Connectivity API integration, handles the technical complexities, empowering partners to
