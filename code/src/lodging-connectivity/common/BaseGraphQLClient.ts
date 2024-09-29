@@ -74,6 +74,17 @@ export abstract class BaseGraphQLClient {
   private initializeApolloClient() {
     return new ApolloClient({
       uri: this.clientConfiguration.endpoint,
+      defaultOptions: {
+        query: {
+          fetchPolicy: 'no-cache'
+        },
+        watchQuery: {
+          fetchPolicy: 'no-cache'
+        },
+        mutate: {
+          fetchPolicy: 'no-cache'
+        }
+      },
       cache: new InMemoryCache(),
       link: new HttpLink({
         uri: this.clientConfiguration.endpoint,
