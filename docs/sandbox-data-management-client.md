@@ -16,6 +16,23 @@ const config: ClientConfiguration = {
 const sandboxClient = new SandboxDataManagementClient(config);
 ```
 
+### Set the Environment (Optional)
+`SandboxDataManagementClient` can be configured to work in different environments, below is a list of the supported environments by this client:
+
+| Environment                      | Corresponding API Endpoint                                               |
+|----------------------------------|--------------------------------------------------------------------------|
+| `ClientEnvironment.SANDBOX_PROD` | https://api.sandbox.expediagroup.com/supply/lodging-sandbox/graphql      |
+| `ClientEnvironment.SANDBOX_TEST` | https://test-api.sandbox.expediagroup.com/supply/lodging-sandbox/graphql |
+
+**Configuration with Environment Example**
+```ts
+const config: ClientConfiguration = {
+   key: 'YOUR_API_KEY',
+   secret: 'YOUR_API_SECRET',
+   environment: ClientEnvironment.SANDBOX_TEST
+};
+```
+
 ### Execute the operation
 ```ts
 const sandboxPropertiesResponse = await sandboxClient.query({

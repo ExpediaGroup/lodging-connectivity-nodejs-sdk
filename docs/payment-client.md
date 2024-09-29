@@ -16,6 +16,23 @@ const config: ClientConfiguration = {
 const paymentClient = new PaymentClient(config);
 ```
 
+### Set the Environment (Optional)
+`PaymentClient` can be configured to work in different environments, below is a list of the supported environments by this client:
+
+| Environment              | Corresponding API Endpoint                                |
+|--------------------------|-----------------------------------------------------------|
+| `ClientEnvironment.PROD` | https://api.expediagroup.com/supply/payments/graphql      |
+| `ClientEnvironment.TEST` | https://test-api.expediagroup.com/supply/payments/graphql |
+
+**Configuration with Environment Example**
+```ts
+const config: ClientConfiguration = {
+   key: 'YOUR_API_KEY',
+   secret: 'YOUR_API_SECRET',
+   environment: ClientEnvironment.TEST
+};
+```
+
 ### Execute the operation
 ```ts
 const paymentInstrumentResponse = await paymentClient.query({
