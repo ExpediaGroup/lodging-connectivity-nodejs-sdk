@@ -1,3 +1,3 @@
-import { SandboxClientExample } from './SandboxClientExample';
+import { SandboxDataManagementClientExample } from './SandboxDataManagementClientExample';
 
-SandboxClientExample.run();
+SandboxDataManagementClientExample.run();

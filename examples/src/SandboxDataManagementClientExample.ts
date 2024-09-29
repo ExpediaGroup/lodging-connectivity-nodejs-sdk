@@ -11,7 +11,7 @@ import {
   SandboxUpdateReservationDocument
 } from '@expediagroup/lodging-connectivity-sdk';
 
-export class SandboxClientExample {
+export class SandboxDataManagementClientExample {
   private static readonly sandboxClient = new SandboxDataManagementClient({
     key: 'KEY',
     secret: 'SECRET'
