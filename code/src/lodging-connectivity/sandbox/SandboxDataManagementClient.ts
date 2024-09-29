@@ -29,7 +29,7 @@ import { BaseGraphQLClient, ClientConfiguration, ClientEnvironment, EndpointProv
  * @constructor Creates a new instance of `SandboxClient` using the provided configuration.
  * @param config The `ClientConfiguration` that includes API credentials and other optional parameters such as client environment
  */
-export class SandboxClient extends BaseGraphQLClient {
+export class SandboxDataManagementClient extends BaseGraphQLClient {
   constructor(config: ClientConfiguration) {
     const env = config.environment ?? ClientEnvironment.PROD;
 

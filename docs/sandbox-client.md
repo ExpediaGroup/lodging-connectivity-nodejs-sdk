@@ -1,5 +1,5 @@
 # Sandbox Client
-`SandboxClient` contains sandbox-specific API operations useful to manage sandbox datasets for testing purposes.
+`SandboxDataManagementClient` contains sandbox-specific API operations useful to manage sandbox datasets for testing purposes.
 
 ### API Endpoint
 This client is connected with https://api.sandbox.expediagroup.com/supply/lodging-sandbox/graphql endpoint by default.
@@ -13,7 +13,7 @@ const config: ClientConfiguration = {
    secret: 'YOUR_API_SECRET'
 };
 
-const sandboxClient = new SandboxClient(config);
+const sandboxClient = new SandboxDataManagementClient(config);
 ```
 
 ### Execute the operation
@@ -27,11 +27,11 @@ const sandboxPropertiesResponse = await sandboxClient.query({
 ```
 
 ## Available Operations
-The SDK offers a set of queries & mutations you can execute using the `SandboxClient`. Below is a list of the available operations.
+The SDK offers a set of queries & mutations you can execute using the `SandboxDataManagementClient`. Below is a list of the available operations.
 
 <br />
 
-### SandboxClient - Queries
+### SandboxDataManagementClient - Queries
 
 <hr />
 
@@ -116,7 +116,7 @@ The SDK offers a set of queries & mutations you can execute using the `SandboxCl
 
 <br /><br />
 
-### SandboxClient - Mutations
+### SandboxDataManagementClient - Mutations
 
 <hr />
 
