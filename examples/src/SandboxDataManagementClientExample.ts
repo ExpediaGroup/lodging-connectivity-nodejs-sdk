@@ -1,9 +1,9 @@
 import {
-  SandboxClient,
   SandboxCancelReservationDocument,
   SandboxChangeReservationStayDatesDocument,
   SandboxCreatePropertyDocument,
   SandboxCreateReservationDocument,
+  SandboxDataManagementClient,
   SandboxDeletePropertyDocument,
   SandboxDeleteReservationDocument,
   SandboxPropertiesDocument,
@@ -11,8 +11,8 @@ import {
   SandboxUpdateReservationDocument
 } from '@expediagroup/lodging-connectivity-sdk';
 
-export class SandboxClientExample {
-  private static readonly sandboxClient = new SandboxClient({
+export class SandboxDataManagementClientExample {
+  private static readonly sandboxClient = new SandboxDataManagementClient({
     key: 'KEY',
     secret: 'SECRET'
   });

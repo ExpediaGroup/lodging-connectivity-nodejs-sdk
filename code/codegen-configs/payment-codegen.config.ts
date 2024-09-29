@@ -2,7 +2,7 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   schema: 'src/graphql-definitions/payment/schema.json',
-  documents: 'src/graphql-definitions/payment/**/*.graphql',
+  documents: 'src/graphql-definitions/payment/(operations|fragments)/**/*.graphql',
   generates: {
     'src/lodging-connectivity/payment/__generated__/types.ts': {
       plugins: [
