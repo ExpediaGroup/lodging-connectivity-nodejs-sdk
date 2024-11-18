@@ -83,7 +83,7 @@ importers:
     devDependencies:
       '@gobstones/typedoc-theme-gobstones':
         specifier: 0.3.1
-        version: 0.3.1(typedoc@0.26.7(typescript@5.5.4))
+        version: 0.3.1(typedoc@0.26.11(typescript@5.5.4))
       '@graphql-codegen/cli':
         specifier: 5.0.2
         version: 5.0.2(@types/node@20.14.14)(graphql@16.9.0)(typescript@5.5.4)
@@ -130,11 +130,11 @@ importers:
         specifier: 5.3.1
         version: 5.3.1(rollup@4.22.4)(typescript@5.5.4)
       typedoc:
-        specifier: 0.26.7
-        version: 0.26.7(typescript@5.5.4)
+        specifier: 0.26.11
+        version: 0.26.11(typescript@5.5.4)
       typedoc-plugin-extras:
         specifier: 3.1.0
-        version: 3.1.0(typedoc@0.26.7(typescript@5.5.4))
+        version: 3.1.0(typedoc@0.26.11(typescript@5.5.4))
 
   examples:
     dependencies:
@@ -3666,8 +3666,8 @@ packages:
   typedoc-plugin-remove-references@0.0.6:
     resolution: {integrity: sha512-QoyHpopznnJbWW/9JT2NHSK+eTmyShkPYebwe5ZnO8aohPLc5okk4puWUDXnNh2Tn7cJU8U3t1tEMO6ghbwE8Q==}
 
-  typedoc@0.26.7:
-    resolution: {integrity: sha512-gUeI/Wk99vjXXMi8kanwzyhmeFEGv1LTdTQsiyIsmSYsBebvFxhbcyAx7Zjo4cMbpLGxM4Uz3jVIjksu/I2v6Q==}
+  typedoc@0.26.11:
+    resolution: {integrity: sha512-sFEgRRtrcDl2FxVP58Ze++ZK2UQAEvtvvH8rRlig1Ja3o7dDaMHmaBfvJmdGnNEFaLTpQsN8dpvZaTqJSu/Ugw==}
     engines: {node: '>= 18'}
     hasBin: true
     peerDependencies:
@@ -4376,11 +4376,11 @@ snapshots:
 
   '@eslint/js@8.57.0': {}
 
-  '@gobstones/typedoc-theme-gobstones@0.3.1(typedoc@0.26.7(typescript@5.5.4))':
+  '@gobstones/typedoc-theme-gobstones@0.3.1(typedoc@0.26.11(typescript@5.5.4))':
     dependencies:
-      typedoc: 0.26.7(typescript@5.5.4)
-      typedoc-plugin-mdn-links: 3.3.1(typedoc@0.26.7(typescript@5.5.4))
-      typedoc-plugin-merge-modules: 6.0.1(typedoc@0.26.7(typescript@5.5.4))
+      typedoc: 0.26.11(typescript@5.5.4)
+      typedoc-plugin-mdn-links: 3.3.1(typedoc@0.26.11(typescript@5.5.4))
+      typedoc-plugin-merge-modules: 6.0.1(typedoc@0.26.11(typescript@5.5.4))
       typedoc-plugin-remove-references: 0.0.6
 
   '@graphql-codegen/add@3.2.3(graphql@16.9.0)':
@@ -8272,21 +8272,21 @@ snapshots:
       is-typed-array: 1.1.13
       possible-typed-array-names: 1.0.0
 
-  typedoc-plugin-extras@3.1.0(typedoc@0.26.7(typescript@5.5.4)):
+  typedoc-plugin-extras@3.1.0(typedoc@0.26.11(typescript@5.5.4)):
     dependencies:
-      typedoc: 0.26.7(typescript@5.5.4)
+      typedoc: 0.26.11(typescript@5.5.4)
 
-  typedoc-plugin-mdn-links@3.3.1(typedoc@0.26.7(typescript@5.5.4)):
+  typedoc-plugin-mdn-links@3.3.1(typedoc@0.26.11(typescript@5.5.4)):
     dependencies:
-      typedoc: 0.26.7(typescript@5.5.4)
+      typedoc: 0.26.11(typescript@5.5.4)
 
-  typedoc-plugin-merge-modules@6.0.1(typedoc@0.26.7(typescript@5.5.4)):
+  typedoc-plugin-merge-modules@6.0.1(typedoc@0.26.11(typescript@5.5.4)):
     dependencies:
-      typedoc: 0.26.7(typescript@5.5.4)
+      typedoc: 0.26.11(typescript@5.5.4)
 
   typedoc-plugin-remove-references@0.0.6: {}
 
-  typedoc@0.26.7(typescript@5.5.4):
+  typedoc@0.26.11(typescript@5.5.4):
     dependencies:
       lunr: 2.3.9
       markdown-it: 14.1.0
