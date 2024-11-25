@@ -6,7 +6,7 @@
     "url": "https://github.com/ExpediaGroup/lodging-connectivity-nodejs-sdk"
   },
   "devDependencies": {
-    "@types/jest": "29.5.12",
+    "@types/jest": "29.5.14",
     "@types/node": "20.14.14",
     "@types/node-fetch": "2.6.11",
     "@typescript-eslint/eslint-plugin": "7.18.0",
