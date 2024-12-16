@@ -46,7 +46,7 @@
   "dependencies": {
     "@apollo/client": "3.11.10",
     "axios": "1.7.9",
-    "graphql": "16.9.0",
+    "graphql": "16.10.0",
     "lodash": "4.17.21",
     "node-fetch": "2.7.0",
     "typescript-json-serializer": "6.0.1",
