@@ -127,8 +127,8 @@ importers:
         specifier: 4.30.1
         version: 4.30.1
       rollup-plugin-dts:
-        specifier: 5.3.1
-        version: 5.3.1(rollup@4.30.1)(typescript@5.7.2)
+        specifier: 6.1.1
+        version: 6.1.1(rollup@4.30.1)(typescript@5.7.2)
       typedoc:
         specifier: 0.27.6
         version: 0.27.6(typescript@5.7.2)
@@ -3194,12 +3194,12 @@ packages:
     engines: {node: 20 || >=22}
     hasBin: true
 
-  rollup-plugin-dts@5.3.1:
-    resolution: {integrity: sha512-gusMi+Z4gY/JaEQeXnB0RUdU82h1kF0WYzCWgVmV4p3hWXqelaKuCvcJawfeg+EKn2T1Ie+YWF2OiN1/L8bTVg==}
-    engines: {node: '>=v14.21.3'}
+  rollup-plugin-dts@6.1.1:
+    resolution: {integrity: sha512-aSHRcJ6KG2IHIioYlvAOcEq6U99sVtqDDKVhnwt70rW6tsz3tv5OSjEiWcgzfsHdLyGXZ/3b/7b/+Za3Y6r1XA==}
+    engines: {node: '>=16'}
     peerDependencies:
-      rollup: ^3.0
-      typescript: ^4.1 || ^5.0
+      rollup: ^3.29.4 || ^4
+      typescript: ^4.5 || ^5.0
 
   rollup@4.30.1:
     resolution: {integrity: sha512-mlJ4glW020fPuLi7DkM/lN97mYEZGWeqBnrljzN0gs7GLctqX3lNWxKQ7Gl712UAX+6fog/L3jh4gb7R6aVi3w==}
@@ -7607,7 +7607,7 @@ snapshots:
       glob: 11.0.0
       package-json-from-dist: 1.0.0
 
-  rollup-plugin-dts@5.3.1(rollup@4.30.1)(typescript@5.7.2):
+  rollup-plugin-dts@6.1.1(rollup@4.30.1)(typescript@5.7.2):
     dependencies:
       magic-string: 0.30.11
       rollup: 4.30.1
