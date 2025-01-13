@@ -44,7 +44,7 @@
     "typedoc-plugin-extras": "4.0.0"
   },
   "dependencies": {
-    "@apollo/client": "3.12.4",
+    "@apollo/client": "3.12.5",
     "axios": "1.7.9",
     "graphql": "16.10.0",
     "lodash": "4.17.21",
