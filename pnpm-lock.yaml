@@ -82,8 +82,8 @@ importers:
         version: 3.17.0
     devDependencies:
       '@gobstones/typedoc-theme-gobstones':
-        specifier: 0.3.1
-        version: 0.3.1(typedoc@0.27.6(typescript@5.7.3))
+        specifier: 0.4.0
+        version: 0.4.0(typedoc@0.27.6(typescript@5.7.3))
       '@graphql-codegen/cli':
         specifier: 5.0.3
         version: 5.0.3(@types/node@22.10.10)(graphql@16.10.0)(typescript@5.7.3)
@@ -553,11 +553,11 @@ packages:
   '@gerrit0/mini-shiki@1.24.1':
     resolution: {integrity: sha512-PNP/Gjv3VqU7z7DjRgO3F9Ok5frTKqtpV+LJW1RzMcr2zpRk0ulhEWnbcNGXzPC7BZyWMIHrkfQX2GZRfxrn6Q==}
 
-  '@gobstones/typedoc-theme-gobstones@0.3.1':
-    resolution: {integrity: sha512-oHRao2vEiRo8+VIWOJQUrecSixzKKjv+EOKS6x8PsUhU/5wA7ZoufIlZMYx1K0d1WHioH2rcZ5qpIohOmj32jA==}
+  '@gobstones/typedoc-theme-gobstones@0.4.0':
+    resolution: {integrity: sha512-hynTPzgsc8oba2DaI1tytHdHLz3xjmv4NMzpbKIfcfVXtiBrGEyrIursqYpgKlxCrSpwitRGBR5M+gq+7HBlPA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      typedoc: ^0.26.4
+      typedoc: ^0.27.7
 
   '@graphql-codegen/add@3.2.3':
     resolution: {integrity: sha512-sQOnWpMko4JLeykwyjFTxnhqjd/3NOG2OyMuvK76Wnnwh8DRrNf2VEs2kmSvLl7MndMlOj7Kh5U154dVcvhmKQ==}
@@ -3597,18 +3597,15 @@ packages:
     peerDependencies:
       typedoc: 0.27.x
 
-  typedoc-plugin-mdn-links@3.3.1:
-    resolution: {integrity: sha512-hgCOm3vDYLbSsIiQbr5hb/ayiMnspjsOwgH4hNVoOLaAeEecuwlY4VY7yh68TY10P1GwbG3N4UnAqmbkvf89KA==}
+  typedoc-plugin-mdn-links@4.0.15:
+    resolution: {integrity: sha512-ZdZLBVMSJzHckVJt902j5xIbujza5Z8l802sXd6G38bOZS6R+ZkjB6RmSdYdKlxiEle8Yqjxn4lZ2NZIeUe2lA==}
     peerDependencies:
-      typedoc: '>= 0.23.14 || 0.24.x || 0.25.x || 0.26.x'
+      typedoc: 0.26.x || 0.27.x
 
-  typedoc-plugin-merge-modules@6.0.1:
-    resolution: {integrity: sha512-cEolb9LDW1pmVyZmNkF3nBMapTu57Ppnim8a6OLqjQdkWjagM7gDGIn7F4Bq17gg9kkFqT4ohD3mAwFq6EkARw==}
+  typedoc-plugin-merge-modules@6.1.0:
+    resolution: {integrity: sha512-AZIyw+H1oG3xpJOq1b2CVnpK7A6OIddi7FsjljsbmQ7vx6dtaorEoz/DQPcGSOzWhWdJPqqdncIzVySuoffS2w==}
     peerDependencies:
-      typedoc: 0.26.x
-
-  typedoc-plugin-remove-references@0.0.6:
-    resolution: {integrity: sha512-QoyHpopznnJbWW/9JT2NHSK+eTmyShkPYebwe5ZnO8aohPLc5okk4puWUDXnNh2Tn7cJU8U3t1tEMO6ghbwE8Q==}
+      typedoc: 0.26.x || ^0.27.1
 
   typedoc@0.27.6:
     resolution: {integrity: sha512-oBFRoh2Px6jFx366db0lLlihcalq/JzyCVp7Vaq1yphL/tbgx2e+bkpkCgJPunaPvPwoTOXSwasfklWHm7GfAw==}
@@ -4320,12 +4317,11 @@ snapshots:
       '@shikijs/types': 1.24.1
       '@shikijs/vscode-textmate': 9.3.0
 
-  '@gobstones/typedoc-theme-gobstones@0.3.1(typedoc@0.27.6(typescript@5.7.3))':
+  '@gobstones/typedoc-theme-gobstones@0.4.0(typedoc@0.27.6(typescript@5.7.3))':
     dependencies:
       typedoc: 0.27.6(typescript@5.7.3)
-      typedoc-plugin-mdn-links: 3.3.1(typedoc@0.27.6(typescript@5.7.3))
-      typedoc-plugin-merge-modules: 6.0.1(typedoc@0.27.6(typescript@5.7.3))
-      typedoc-plugin-remove-references: 0.0.6
+      typedoc-plugin-mdn-links: 4.0.15(typedoc@0.27.6(typescript@5.7.3))
+      typedoc-plugin-merge-modules: 6.1.0(typedoc@0.27.6(typescript@5.7.3))
 
   '@graphql-codegen/add@3.2.3(graphql@16.10.0)':
     dependencies:
@@ -8067,15 +8063,13 @@ snapshots:
     dependencies:
       typedoc: 0.27.6(typescript@5.7.3)
 
-  typedoc-plugin-mdn-links@3.3.1(typedoc@0.27.6(typescript@5.7.3)):
+  typedoc-plugin-mdn-links@4.0.15(typedoc@0.27.6(typescript@5.7.3)):
     dependencies:
       typedoc: 0.27.6(typescript@5.7.3)
 
-  typedoc-plugin-merge-modules@6.0.1(typedoc@0.27.6(typescript@5.7.3)):
+  typedoc-plugin-merge-modules@6.1.0(typedoc@0.27.6(typescript@5.7.3)):
     dependencies:
       typedoc: 0.27.6(typescript@5.7.3)
-
-  typedoc-plugin-remove-references@0.0.6: {}
 
   typedoc@0.27.6(typescript@5.7.3):
     dependencies:
