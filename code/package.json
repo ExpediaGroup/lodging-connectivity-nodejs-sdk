@@ -40,7 +40,7 @@
     "axios-mock-adapter": "2.1.0",
     "rollup": "4.32.0",
     "rollup-plugin-dts": "6.1.1",
-    "typedoc": "0.27.6",
+    "typedoc": "0.28.11",
     "typedoc-plugin-extras": "4.0.0"
   },
   "dependencies": {
